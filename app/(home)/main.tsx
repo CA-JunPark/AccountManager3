@@ -7,37 +7,56 @@ import { VStack } from '@/components/ui/vstack';
 import { Box } from '@/components/ui/box';
 import { HStack } from '@/components/ui/hstack';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import React, { useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { Input, InputField} from '@/components/ui/input';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Avatar, AvatarFallbackText, AvatarImage} from '@/components/ui/avatar';
 
+const accounts = Array.from({ length: 100 }, (_, i) => ({
+  id: `${i + 1}`,
+  account: `User${i + 1}`,
+  pw: `password${i + 1}`,
+  logo: `logo${i + 1}`,
+  note: `note${i + 1}`,
+}));
+
 export default function Main() {
-  const [isArrowDown, setIsArrowDown] = useState(true);
+  const [isArrowUp, setIsArrowUp] = useState(true);
+  const [sortedAccounts, setSortedAccounts] = useState([...accounts]); // Initialize with a copy of accounts
   const searchTextRef = useRef("");
 
-  const accounts = Array.from({ length: 100 }, (_, i) => ({
-    id: `${i + 1}`,
-    account: `User${i + 1}`,
-    pw: `password${i + 1}`,
-    logo: `logo${i + 1}`,
-    note: `note${i + 1}`,
-  }));
-  
+  useEffect(() => {
+    sortButtons()
+  }, []);
 
   const clickSetting = () => {
     console.log('clicked setting');
   };
-  const clickSort = () => {
-    setIsArrowDown(!isArrowDown);
-  }
-  const handleTextChange = (value: string) => {
-    searchTextRef.current = value; 
+
+  const sortButtons = () => {
+    const sorted = [...accounts].sort((a, b) => {
+      if (isArrowUp) {
+        return a.account.localeCompare(b.account);
+      } else {
+        return b.account.localeCompare(a.account);
+      }
+    });
+    setSortedAccounts(sorted);
   };
+
+  const clickSort = () => {
+    setIsArrowUp(!isArrowUp);
+    sortButtons();
+  };
+
+  const handleTextChange = (value: string) => {
+    searchTextRef.current = value;
+  };
+
   const clickSearch = () => {
     console.log('search text: ', searchTextRef.current);
   };
+
   const clickAdd = () => {
     console.log('clicked add');
   };
@@ -51,12 +70,12 @@ export default function Main() {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => clickSort()} style={styles.iconButtons}>
-          <Ionicons name={isArrowDown ? "arrow-down" : "arrow-up"} size={30} color="black" />
+          <Ionicons name={isArrowUp ? "arrow-up" : "arrow-down"} size={30} color="black" />
         </TouchableOpacity>
 
         <Input size="xl" variant="rounded" isInvalid={false} style={styles.input}>
-          <InputField 
-            style={styles.inputFiled} textAlign="center" 
+          <InputField
+            style={styles.inputFiled} textAlign="center"
             onChangeText={(value) => handleTextChange(value)}/>
         </Input>
 
@@ -66,11 +85,11 @@ export default function Main() {
 
       </HStack>
       <ScrollView style={styles.scrollView}>
-        {accounts.map(({ id, account, pw, logo, note }) => (
+        {sortedAccounts.map(({ id, account, pw, logo, note }) => (
           <AccountButton key={id} account={account} pw={pw} logo={logo} note={note} />
         ))}
       </ScrollView>
-      
+
       <Fab onPress={() => clickAdd()}>
         <Entypo name="plus" size={32} color="white" />
       </Fab>
@@ -85,11 +104,13 @@ interface AccountButtonProps {
   note: string;
 }
 
-const AccountButton = ({account, pw, logo, note}: AccountButtonProps) => {
+// memo makes this object will only re-render if its props change
+// TODO : change AvatarFallbackText to AvatarImage
+const AccountButton = memo(({account, pw, logo, note}: AccountButtonProps) => {
   const click = () => {
     console.log(account, pw, logo, note);
   };
-  
+
   return (
     <TouchableOpacity style={styles.accountBtn} onPress={() => click()}>
       <HStack style={{gap:"8%"}}>
@@ -107,7 +128,7 @@ const AccountButton = ({account, pw, logo, note}: AccountButtonProps) => {
       </HStack>
     </TouchableOpacity>
   );
-}
+});
 
 const styles = StyleSheet.create({
   mainVStack: {
