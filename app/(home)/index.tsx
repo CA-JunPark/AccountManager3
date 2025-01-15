@@ -28,7 +28,7 @@ export default function Index() {
 
   const pressEnter = () => {
     checkPassword(passwordRef.current);
-    // router.push("/main");
+    router.push("/main");
   }
 
   return (
@@ -82,5 +82,4 @@ const styles = StyleSheet.create({
   inputFiled: {
     color: 'black',
   }
-  
 });
