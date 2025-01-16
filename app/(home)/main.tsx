@@ -13,7 +13,7 @@ import { Avatar, AvatarFallbackText, AvatarImage} from '@/components/ui/avatar';
 import { SafeAreaView } from "react-native-safe-area-context";
 import AccountModal, { accountInfo } from "@/components/modal/accountModal";
 
-// TODO change it to real data later
+// TODO change it to real data later EXpo SQLite
 const generateAccounts = (num: number): accountInfo[] => {
   return Array.from({ length: num }, (_, i) => ({
     id: i + 1,
