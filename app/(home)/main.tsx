@@ -13,6 +13,7 @@ import { Avatar, AvatarFallbackText, AvatarImage} from '@/components/ui/avatar';
 import { SafeAreaView } from "react-native-safe-area-context";
 import AccountModal, { accountInfo } from "@/components/modal/accountModal";
 
+// TODO change it to real data later
 const generateAccounts = (num: number): accountInfo[] => {
   return Array.from({ length: num }, (_, i) => ({
     id: i + 1,
@@ -93,6 +94,7 @@ export default function Main() {
             <Input size="xl" variant="rounded" isInvalid={false} style={styles.input}>
               <InputField
                 style={styles.inputFiled} textAlign="center"
+                selectionColor="#FF5733"
                 onChangeText={(value) => handleTextChange(value)}/>
             </Input>
 
@@ -180,10 +182,10 @@ const styles = StyleSheet.create({
   },
   input:{
     width: '70%',
-    backgroundColor: 'grey',
+    backgroundColor: '#4F4F4F',
   },
   inputFiled:{
-    color: 'black',
+    color: 'white',
     fontSize: 20,
   },
   iconButtons: {

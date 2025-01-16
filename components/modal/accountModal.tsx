@@ -18,30 +18,57 @@ interface AccountButtonProps{
 }
 
 export const AccountModal = ({isShown, setIsShown, info}:AccountButtonProps) => {
-
   return (
     <Modal
       visible={isShown} 
       animationType='slide'
+      transparent={true}
+      onRequestClose={() => setIsShown(false)} // TODO: open confirmation card
+      style={styles.modal}
     >
-      <VStack style={styles.main}>
-          <Text>Hello</Text>
-          <TouchableOpacity style={styles.close} onPress={() => setIsShown(false)}>
-            <Text>Close</Text>
-          </TouchableOpacity>
-          <Text>{info.id}</Text>
-          <Text>{info.pw}</Text>
-          <Text>{info.logo}</Text>
-          <Text>{info.note}</Text>
-      </VStack>
+      <Box style={styles.mainBox}>
+          <VStack style={styles.mainVStack}>
+              <Text>Hello</Text>
+              <TouchableOpacity style={styles.close} onPress={() => setIsShown(false)}>
+                <Text>Close</Text>
+              </TouchableOpacity>
+              <Text>{info.id}</Text>
+              <Text>{info.pw}</Text>
+              <Text>{info.logo}</Text>
+              <Text>{info.note}</Text>
+          </VStack>
+      </Box>
     </Modal>
   )
 }
 
 const styles = StyleSheet.create({
-  main:{
+  modal:{
+    flex: 1,
     justifyContent: 'center',
-    alignContent: 'center',
+    alignItems: 'center',
+  },
+  mainBox: {
+    flex: 1,
+    margin: 20,
+    backgroundColor: '#4F4F4F',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 10,
+  },
+  mainVStack:{
+    borderWidth: 1,
+    borderColor: 'red',
+    width: 250,
+    height: 120
   },
   close:{
     borderWidth: 1,
