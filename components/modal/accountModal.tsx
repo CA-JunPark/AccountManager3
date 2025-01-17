@@ -21,13 +21,13 @@ export interface accountInfo{
 };
 
 interface AccountButtonProps{
-  isShown: boolean
+  isShown: boolean;
   setIsShown: (newState: boolean) => void;
-  info: accountInfo
-  adding: boolean
+  info: accountInfo;
+  isAdding: boolean;
 }
 
-export const AccountModal = ({isShown, setIsShown, info, adding}: AccountButtonProps) => {
+export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButtonProps) => {
   const [currentTitle, setCurrentTitle] = useState(info.title);
   const [currentAccount, setCurrentAccount] = useState(info.account);
   const [currentPw, setCurrentPw] = useState(info.pw);
@@ -41,6 +41,10 @@ export const AccountModal = ({isShown, setIsShown, info, adding}: AccountButtonP
       setCurrentNote(info.note);
     }
   }, [info]);
+
+  const closeModal = () => {
+    setIsShown(false);
+  };
 
   const uploadLogo = () => {
     console.log("uploading Logo");
@@ -61,17 +65,28 @@ export const AccountModal = ({isShown, setIsShown, info, adding}: AccountButtonP
     }
   };
 
+  const deleteAccount = () => {
+    console.log("Delete id =", info.id);
+  };
+
   const resetTexts = () => {
     setCurrentTitle(info.title);
     setCurrentAccount(info.account);
     setCurrentPw(info.pw);
     setCurrentNote(info.note)
-    console.log("reset");
+    console.log("reset id =", info.id);
+  };
+
+  const saveAccount = () => {
+    console.log("Save id =", info.id);
+  }
+
+  const addAccount = () => {
+
   };
 
   return (
     <KeyboardAvoidingView>
-      
       <Modal
         visible={isShown} 
         animationType='slide'
@@ -81,7 +96,7 @@ export const AccountModal = ({isShown, setIsShown, info, adding}: AccountButtonP
       >
         <Box style={styles.mainBox}>
             <VStack style={styles.mainVStack}>
-              <TouchableOpacity style={styles.close} onPress={() => setIsShown(false)}>
+              <TouchableOpacity style={styles.close} onPress={() => closeModal()}>
                 <Ionicons name="arrow-back" size={40} color="white" />
               </TouchableOpacity>
 
@@ -102,17 +117,34 @@ export const AccountModal = ({isShown, setIsShown, info, adding}: AccountButtonP
               <CustomInputField title="PW" content={info.pw} isNote={false} inputState={currentPw} setInput={setCurrentPw}/>
               <CustomInputField title="Note" content={info.note} isNote={true} inputState={currentNote} setInput={setCurrentNote}/>
 
-              <HStack style={styles.bottomHStack}>
-                <Button size="md" style={styles.bottomBtn}>
-                  <Text style={styles.bottomBtnText}> Delete </Text>
-                </Button>
-                <Button onPress={() => resetTexts()}>
-                  <Ionicons name="refresh" size={24} color="white" />
-                </Button>
-                <Button size="md" style={styles.bottomBtn}>
-                  <Text style={styles.bottomBtnText}> Save </Text>
-                </Button>
-              </HStack>
+              {!isAdding ? (
+                <HStack style={styles.bottomHStack}>
+                  <Button size="md" style={styles.bottomBtn}
+                    onPress={() => deleteAccount()}
+                  >
+                    <Text style={styles.bottomBtnText}> Delete </Text>
+                  </Button>
+                  <Button onPress={() => resetTexts()}>
+                    <Ionicons name="refresh" size={24} color="white" />
+                  </Button>
+                  <Button size="md" style={styles.bottomBtn}
+                    onPress={() => saveAccount()}
+                  >
+                    <Text style={styles.bottomBtnText}> Save </Text>
+                  </Button>
+                </HStack>
+              ): (
+                <HStack style={styles.bottomHStack}>
+                  <Button onPress={() => resetTexts()}>
+                    <Ionicons name="refresh" size={24} color="white" />
+                  </Button>
+                  <Button size="md" style={styles.bottomBtn}
+                    onPress={() => addAccount()}
+                  >
+                    <Text style={styles.bottomBtnText}> Add </Text>
+                  </Button>
+                </HStack>
+              )}
             </VStack>
         </Box>
       </Modal>

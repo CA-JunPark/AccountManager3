@@ -29,11 +29,11 @@ const accounts = generateAccounts(100);
 
 const defaultAccountInfo: accountInfo = {
   id: 0,
-  title: 'titleExample',
-  account: 'accountExample',
-  pw: 'pwExample',
-  logo: 'logoExample',
-  note: 'noteExample'
+  title: '',
+  account: '',
+  pw: '',
+  logo: '',
+  note: ''
 };
 
 export default function Main() {
@@ -42,6 +42,7 @@ export default function Main() {
   const searchTextRef = useRef("");
   const [modalVisibility, setModalVisibility] = useState(false);
   const [selectedAccountInfo, setSelectedAccountInfo] = useState(defaultAccountInfo);
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     sortButtons()
@@ -76,7 +77,12 @@ export default function Main() {
   };
 
   const clickAdd = () => {
-    console.log('clicked add');
+    setIsAdding(true)
+    setSelectedAccountInfo(defaultAccountInfo)
+    setModalVisibility(true)
+    // get max id
+
+    // 
   };
 
   return (
@@ -114,6 +120,7 @@ export default function Main() {
               selectedAccountInfo={account} 
               setSelectedAccountInfo={setSelectedAccountInfo} 
               openModal={setModalVisibility}
+              setIsAdding={setIsAdding}
             />
           ))}
         </ScrollView>
@@ -123,25 +130,31 @@ export default function Main() {
         </Fab>
 
       </VStack>
-      <AccountModal isShown={modalVisibility} setIsShown={setModalVisibility} info={selectedAccountInfo} adding={false}
+
+      <AccountModal 
+        isShown={modalVisibility} 
+        setIsShown={setModalVisibility} 
+        info={selectedAccountInfo} 
+        isAdding={isAdding}
       ></AccountModal>
     </KeyboardAvoidingView>
   );
 }
 
 interface AccountButtonProps {
-  selectedAccountInfo: accountInfo
-  setSelectedAccountInfo: (newInfo: accountInfo) => void
-  openModal: (visibility: boolean) => void
+  selectedAccountInfo: accountInfo;
+  setSelectedAccountInfo: (newInfo: accountInfo) => void;
+  openModal: (visibility: boolean) => void;
+  setIsAdding: (newIsAdding: boolean) => void;
 }
 
 // memo makes this object will only re-render if its props change
 // TODO : change AvatarFallbackText to AvatarImage
-const AccountButton = memo(({selectedAccountInfo, setSelectedAccountInfo, openModal}: AccountButtonProps) => {
+const AccountButton = memo(({selectedAccountInfo, setSelectedAccountInfo, openModal, setIsAdding}: AccountButtonProps) => {
   const click = () => {
-    console.log(selectedAccountInfo.account, selectedAccountInfo.pw, selectedAccountInfo.logo, selectedAccountInfo.note);
     setSelectedAccountInfo(selectedAccountInfo);
-    openModal(true);
+    setIsAdding(false);
+    openModal(true);    
   };
 
   return (
