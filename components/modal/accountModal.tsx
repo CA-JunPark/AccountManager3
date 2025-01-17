@@ -130,12 +130,12 @@ interface CustomInputFieldInterface{
 
 // Todo Trim strings
 const CustomInputField = ({ title, content, isNote, inputState, setInput } :CustomInputFieldInterface) => {
-  const fieldWidth = 200;
+  const fieldWidth = 240;
   
   return (
     <Box>
-      <HStack style={{justifyContent:'flex-end', alignContent: 'center'}}>
-        <Text style={{ fontSize: 24, textAlign: 'left', color:'white'}}> {title}: </Text>
+      <VStack style={{justifyContent:'flex-end', alignContent: 'center'}}>
+        <Text style={{ fontSize: 12, textAlign: 'left', color:'white'}}> {title}: </Text>
         {!isNote ? (
           <Input style={{ width: fieldWidth}}>
             <InputField style={{ color:'white'}} selectionColor="#FF5733"
@@ -151,7 +151,7 @@ const CustomInputField = ({ title, content, isNote, inputState, setInput } :Cust
             />
           </Textarea>
         )}
-      </HStack>
+      </VStack>
     </Box>
   );
 };
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     width: "90%",
     justifyContent:'center',
     alignContent: 'center',
-    gap: 20,
+    gap: 10,
   },
   close:{
     width: 'auto',
