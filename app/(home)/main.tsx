@@ -17,6 +17,7 @@ import AccountModal, { accountInfo } from "@/components/modal/accountModal";
 const generateAccounts = (num: number): accountInfo[] => {
   return Array.from({ length: num }, (_, i) => ({
     id: i + 1,
+    title: `title${i + 1}`,
     account: `User${i + 1}`,
     pw: `password${i + 1}`,
     logo: `logo${i + 1}`,
@@ -28,6 +29,7 @@ const accounts = generateAccounts(100);
 
 const defaultAccountInfo: accountInfo = {
   id: 0,
+  title: 'titleExample',
   account: 'accountExample',
   pw: 'pwExample',
   logo: 'logoExample',
@@ -121,7 +123,7 @@ export default function Main() {
         </Fab>
 
       </VStack>
-      <AccountModal isShown={modalVisibility} setIsShown={setModalVisibility} info={selectedAccountInfo}
+      <AccountModal isShown={modalVisibility} setIsShown={setModalVisibility} info={selectedAccountInfo} adding={false}
       ></AccountModal>
     </KeyboardAvoidingView>
   );
