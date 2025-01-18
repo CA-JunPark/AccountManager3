@@ -12,8 +12,9 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Avatar, AvatarFallbackText, AvatarImage} from '@/components/ui/avatar';
 import { SafeAreaView } from "react-native-safe-area-context";
 import AccountModal, { accountInfo } from "@/components/modal/accountModal";
+import SettingModal from "@/components/modal/settingModal";
 
-// TODO change it to real data later EXpo SQLite
+// TODO change it to real data later Expo SQLite
 const generateAccounts = (num: number): accountInfo[] => {
   return Array.from({ length: num }, (_, i) => ({
     id: i + 1,
@@ -27,7 +28,7 @@ const generateAccounts = (num: number): accountInfo[] => {
 
 const accounts = generateAccounts(100);
 
-const defaultAccountInfo: accountInfo = {
+const emptyAccountInfo: accountInfo = {
   id: 0,
   title: '',
   account: '',
@@ -40,9 +41,10 @@ export default function Main() {
   const [isArrowUp, setIsArrowUp] = useState(true);
   const [sortedAccounts, setSortedAccounts] = useState([...accounts]);
   const searchTextRef = useRef("");
-  const [modalVisibility, setModalVisibility] = useState(false);
-  const [selectedAccountInfo, setSelectedAccountInfo] = useState(defaultAccountInfo);
+  const [accountModalVisibility, setAccountModalVisibility] = useState(false);
+  const [selectedAccountInfo, setSelectedAccountInfo] = useState(emptyAccountInfo);
   const [isAdding, setIsAdding] = useState(false);
+  const [settingModalVisibility, setSettingModalVisibility] = useState(false);
 
   useEffect(() => {
     sortButtons()
@@ -50,6 +52,7 @@ export default function Main() {
 
   const clickSetting = () => {
     console.log('clicked setting');
+    setSettingModalVisibility(true);
   };
 
   const sortButtons = () => {
@@ -78,11 +81,11 @@ export default function Main() {
 
   const clickAdd = () => {
     setIsAdding(true)
-    setSelectedAccountInfo(defaultAccountInfo)
-    setModalVisibility(true)
+    setSelectedAccountInfo(emptyAccountInfo)
+    setAccountModalVisibility(true)
     // get max id
 
-    // 
+    // set is when open
   };
 
   return (
@@ -119,7 +122,7 @@ export default function Main() {
               key={account.id} 
               selectedAccountInfo={account} 
               setSelectedAccountInfo={setSelectedAccountInfo} 
-              openModal={setModalVisibility}
+              openModal={setAccountModalVisibility}
               setIsAdding={setIsAdding}
             />
           ))}
@@ -132,11 +135,18 @@ export default function Main() {
       </VStack>
 
       <AccountModal 
-        isShown={modalVisibility} 
-        setIsShown={setModalVisibility} 
+        isShown={accountModalVisibility} 
+        setIsShown={setAccountModalVisibility} 
         info={selectedAccountInfo} 
         isAdding={isAdding}
       ></AccountModal>
+
+      <SettingModal
+        isShown={settingModalVisibility}
+        setIsShown={setSettingModalVisibility}
+      >
+      </SettingModal>
+
     </KeyboardAvoidingView>
   );
 }

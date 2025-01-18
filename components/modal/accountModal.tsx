@@ -1,5 +1,5 @@
 import { View, Text, Modal, StyleSheet, Pressable, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, memo } from 'react'
 import { Box } from '@/components/ui/box';
 import { VStack } from '@/components/ui/vstack';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -79,10 +79,12 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
 
   const saveAccount = () => {
     console.log("Save id =", info.id);
+    //do Final Trim text
   }
 
   const addAccount = () => {
-
+    console.log("Add is = ", info.id);
+    
   };
 
   return (
@@ -96,9 +98,12 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
       >
         <Box style={styles.mainBox}>
             <VStack style={styles.mainVStack}>
-              <TouchableOpacity style={styles.close} onPress={() => closeModal()}>
-                <Ionicons name="arrow-back" size={40} color="white" />
-              </TouchableOpacity>
+              <HStack style={styles.header}>
+                  <Text style={styles.headerText}> {isAdding ? 'Add Account' : 'Account'} </Text>
+                  <Button style={styles.close} onPress={() => closeModal()}>
+                      <Ionicons name="arrow-back" size={40} color="white" />
+                  </Button>
+              </HStack>
 
               <HStack style={styles.logoHStack}>
                 <Avatar size="2xl">
@@ -160,9 +165,12 @@ interface CustomInputFieldInterface{
   setInput: (value: string) => void;
 };
 
-// Todo Trim strings
-const CustomInputField = ({ title, content, isNote, inputState, setInput } :CustomInputFieldInterface) => {
+const CustomInputField = memo( ( { title, content, isNote, inputState, setInput } :CustomInputFieldInterface ) => {
   const fieldWidth = 240;
+
+  const trim = (text:string) => {
+    setInput(inputState.trim())
+  };
   
   return (
     <Box>
@@ -170,9 +178,10 @@ const CustomInputField = ({ title, content, isNote, inputState, setInput } :Cust
         <Text style={{ fontSize: 12, textAlign: 'left', color:'white'}}> {title}: </Text>
         {!isNote ? (
           <Input style={{ width: fieldWidth}}>
-            <InputField style={{ color:'white'}} selectionColor="#FF5733"
+            <InputField style={{color:'white'}} selectionColor="#FF5733"
               defaultValue={content} value={inputState} 
               onChangeText={setInput}
+              onBlur={() => trim(inputState)}
             /> 
           </Input>
         ) : (
@@ -180,13 +189,14 @@ const CustomInputField = ({ title, content, isNote, inputState, setInput } :Cust
             <TextareaInput style={{textAlignVertical: 'top', color:'white'}}  selectionColor="#FF5733"
               defaultValue={content} value={inputState}
               onChangeText={setInput}
+              onBlur={() => trim(inputState)}
             />
           </Textarea>
         )}
       </VStack>
     </Box>
   );
-};
+});
 
 const styles = StyleSheet.create({
   modal:{
@@ -215,6 +225,16 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignContent: 'center',
     gap: 10,
+  },
+  header:{
+    width: 'auto',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+  },
+  headerText:{
+    textAlign:'center',
+    fontSize: 30,
+    color: 'white',
   },
   close:{
     width: 'auto',
