@@ -1,5 +1,5 @@
 // Main screen
-import { Text, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform} from "react-native";
+import { Text, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Task} from "react-native";
 import { Link } from 'expo-router';
 import { Fab, } from '@/components/ui/fab';
 import Entypo from '@expo/vector-icons/Entypo'; // https://icons.expo.fyi/Index
@@ -13,7 +13,11 @@ import { Avatar, AvatarFallbackText, AvatarImage} from '@/components/ui/avatar';
 import { SafeAreaView } from "react-native-safe-area-context";
 import AccountModal, { accountInfo } from "@/components/modal/accountModal";
 import SettingModal from "@/components/modal/settingModal";
-
+import { useSQLiteContext } from "expo-sqlite"; // https://www.youtube.com/watch?v=AT5asDD3u_A
+import { drizzle, useLiveQuery} from 'drizzle-orm/expo-sqlite'; // https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v0311#live-queries-
+import * as schema from '@/db/schema';
+import { accounts } from '@/db/schema';
+import { eq } from "drizzle-orm";
 
 // TODO change it to real data later Expo SQLite
 const generateAccounts = (num: number): accountInfo[] => {
@@ -27,7 +31,7 @@ const generateAccounts = (num: number): accountInfo[] => {
   }));
 };
 
-const accounts = generateAccounts(100);
+const tempAccounts = generateAccounts(100);
 
 const emptyAccountInfo: accountInfo = {
   id: 0,
@@ -40,15 +44,50 @@ const emptyAccountInfo: accountInfo = {
 
 export default function Main() {
   const [isArrowUp, setIsArrowUp] = useState(true);
-  const [sortedAccounts, setSortedAccounts] = useState([...accounts]);
+  const [sortedAccounts, setSortedAccounts] = useState([...tempAccounts]);
   const searchTextRef = useRef("");
   const [accountModalVisibility, setAccountModalVisibility] = useState(false);
   const [selectedAccountInfo, setSelectedAccountInfo] = useState(emptyAccountInfo);
   const [isAdding, setIsAdding] = useState(false);
   const [settingModalVisibility, setSettingModalVisibility] = useState(false);
 
+  const [sqlData, setSqlData] = useState<accountInfo[]>([]);
+
+  const db = useSQLiteContext();
+  const drizzleDB = drizzle(db, { schema })
+
   useEffect(() => {
     sortButtons();
+    const load = async() => {
+      // await drizzleDB.insert(accounts).values([{
+      //     title: '1',
+      //     account: 'User1',
+      //     pw: 'password1',
+      //     logo: 'logo1',
+      //     note: 'note1'
+      //   },
+      //   {
+      //     title: '2',
+      //     account: 'User2',
+      //     pw: 'password2',
+      //     logo: 'logo2',
+      //     note: 'note2'
+      //   }]
+      // )
+
+      // await drizzleDB.delete(accounts).where(eq(accounts.title, '1'));
+      // await drizzleDB.delete(accounts).where(eq(accounts.title, '2'));
+      // await drizzleDB.delete(accounts); // delete All
+
+    // await drizzleDB.update(accounts).set({ title: '3' }).where(eq(accounts.title, '1'));
+
+      const data = await drizzleDB.query.accounts.findMany();
+      console.log(data);
+      const num = await drizzleDB.$count(accounts);
+      console.log(num);
+
+    };
+    load()
   }, []);
 
   const clickSetting = () => {
@@ -57,7 +96,7 @@ export default function Main() {
   };
 
   const sortButtons = () => {
-    const sorted = [...accounts].sort((a, b) => {
+    const sorted = [...tempAccounts].sort((a, b) => {
       if (isArrowUp) {
         return a.account.localeCompare(b.account);
       } else {
