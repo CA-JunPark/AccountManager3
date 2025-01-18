@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AccountModal, { accountInfo } from "@/components/modal/accountModal";
 import SettingModal from "@/components/modal/settingModal";
 
+
 // TODO change it to real data later Expo SQLite
 const generateAccounts = (num: number): accountInfo[] => {
   return Array.from({ length: num }, (_, i) => ({
@@ -47,7 +48,7 @@ export default function Main() {
   const [settingModalVisibility, setSettingModalVisibility] = useState(false);
 
   useEffect(() => {
-    sortButtons()
+    sortButtons();
   }, []);
 
   const clickSetting = () => {
