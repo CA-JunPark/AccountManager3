@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +41,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'ddb',
 ]
+
+# daphne
+ASGI_APPLICATION = "am3_api.asgi.application"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
