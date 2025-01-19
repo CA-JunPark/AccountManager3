@@ -1,6 +1,5 @@
 // Main screen
 import { Text, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Task} from "react-native";
-import { Link } from 'expo-router';
 import { Fab, } from '@/components/ui/fab';
 import Entypo from '@expo/vector-icons/Entypo'; // https://icons.expo.fyi/Index
 import { VStack } from '@/components/ui/vstack';
