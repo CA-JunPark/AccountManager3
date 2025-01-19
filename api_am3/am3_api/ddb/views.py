@@ -4,18 +4,26 @@ from rest_framework import status
 from .models import accountInfo
 from .serializers import AccountInfoSerializer
 
-class AccountInfoList(APIView):
+class GetAll(APIView):
     def get(self, request):
-        accounts = accountInfo.objects.all()
-        serializer = AccountInfoSerializer(accounts, many=True)
-        return Response(serializer.data)
+        pass
 
+class AccountQuery(APIView):
+    def get(self, request):
+        pass
+    
     def post(self, request):
-        serializer = AccountInfoSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # add
+        pass
+    
+    def delete(self, request):
+        pass
 
+class GetAdmin(APIView):
+    def get(self, request):
+        # login with pw -> give token?
+        pass
+    
     def update(self, request):
-        return Response()
+        # change PW
+        pass
