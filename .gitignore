@@ -195,4 +195,4 @@ GitHub.sublime-settings
 .history
 
 env.js
-env.py
+db.sqlite3
