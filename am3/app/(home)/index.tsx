@@ -6,20 +6,27 @@ import { VStack } from '@/components/ui/vstack';
 import { router } from 'expo-router';
 import { useRef } from "react";
 import axios from 'axios';
+import { loginUrl } from '@/assets/fixedData/env';
+
+const login = async(password: string) => {
+  const apiUrl = loginUrl;
+  const payload = {
+    pw: password
+  }
+  try {
+    const response = await axios.post(apiUrl, payload);
+    console.log("response: ", response.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 export default function Index() {
   const passwordRef = useRef("");
   
   const checkPassword = async (password: string) => {
     console.log("Checking password: ", password);
-    
-    // const apiUrl = '';
-    // try {
-    //   const response = await axios.get(apiUrl);
-    //   console.log("response: ", response.data);
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    login(password)
   };
 
   const handleChange = (value: string) => {
