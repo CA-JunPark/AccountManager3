@@ -32,10 +32,6 @@ const generateAccounts = (num: number): accountInfo[] => {
 
 const tempAccounts = generateAccounts(10);
 
-const searchFilter = async(key: string, accounts: accountInfo[]) => {
-
-};
-
 const emptyAccountInfo: accountInfo = {
   id: 0,
   title: '',
@@ -59,8 +55,10 @@ export default function Main() {
   const db = useSQLiteContext();
   const drizzleDB = drizzle(db, { schema })
 
+  const allAccounts = [...tempAccounts]
+
   useEffect(() => {
-    sortButtons();
+    sortButton(sortedAccounts);
     const load = async() => {
       // await drizzleDB.insert(accounts).values([{
       //     title: '1',
@@ -94,7 +92,7 @@ export default function Main() {
 
   // sort when isArrowUp change
   useEffect(()=>{
-    sortButtons();
+    sortButton(sortedAccounts);
   }, [isArrowUp])
 
   const clickSetting = () => {
@@ -102,13 +100,12 @@ export default function Main() {
     setSettingModalVisibility(true);
   };
 
-  const sortButtons = () => {
-    const sorted = [...tempAccounts].sort((a, b) => {
+  //TODO figure out why it is called multiple times
+  const sortButton = (accounts: accountInfo[]) => {
+    const sorted = [...accounts].sort((a, b) => {
       if (isArrowUp) {
-        console.log("up");
         return a.account.localeCompare(b.account);
       } else {
-        console.log("down");
         return b.account.localeCompare(a.account);
       }
     });
@@ -123,9 +120,24 @@ export default function Main() {
     searchTextRef.current = value;
   };
 
+  const searchFilter = async(key: string, accounts: accountInfo[]) => {
+    return accounts.filter(account => 
+      account.title.includes(key) || 
+      account.account.includes(key) || 
+      account.pw.includes(key) || 
+      account.note.includes(key)
+    );
+  };
+
   const clickSearch = async() => {
-    console.log('search text: ', searchTextRef.current);
-    searchFilter(searchTextRef.current, sortedAccounts)
+    const filterText = searchTextRef.current;
+    if (filterText == ""){
+      sortButton(allAccounts);
+    }
+    else{
+      const filteredAccounts = await searchFilter(searchTextRef.current, sortedAccounts)
+      setSortedAccounts(filteredAccounts);
+    }
   };
 
   const clickAdd = () => {
