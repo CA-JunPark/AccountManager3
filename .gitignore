@@ -196,3 +196,5 @@ GitHub.sublime-settings
 
 env.js
 db.*
+
+.vscode

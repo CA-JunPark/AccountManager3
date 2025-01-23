@@ -5,17 +5,19 @@ from .models import accountInfo
 from .serializers import AccountInfoSerializer
 from rest_framework.permissions import IsAuthenticated
 
-class Login(APIView):
-    def post(self, request):
-        password = request.data.get('pw')
-        print("given pw: ", password)
-        return Response(f"got: {password}" )
-
 class ChangePW(APIView):
     permission_classes = [IsAuthenticated]
-    def update(self, request):
-        # change PW
-        pass
+    
+    def put(self, request):
+        pw = request.data.get('pw')
+        newPw = request.data.get('newPw')
+        confirm = request.data.get('confirm')
+
+        result = "Fa"
+        if newPw == confirm:
+            result = "Tr"
+
+        return Response(result)
     
 class GetAll(APIView):
     permission_classes = [IsAuthenticated]

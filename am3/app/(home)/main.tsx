@@ -80,13 +80,12 @@ export default function Main() {
 
     // await drizzleDB.update(accounts).set({ title: '3' }).where(eq(accounts.title, '1'));
 
-      const data = await drizzleDB.query.accounts.findMany();
-      console.log(data);
-      const num = await drizzleDB.$count(accounts);
-      console.log(num);
-
+      // const data = await drizzleDB.query.accounts.findMany();
+      // console.log(data);
+      // const num = await drizzleDB.$count(accounts);
+      // console.log(num);
     };
-    load()
+    // load()
   }, []);
 
   const clickSetting = () => {

@@ -5,6 +5,20 @@ import { Box } from '@/components/ui/box';
 import { VStack } from '@/components/ui/vstack';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { HStack } from '@/components/ui/hstack';
+import api from '@/components/apis/api';
+
+const changePW = async(pw: string, newPw: string, confirm: string) =>{
+  try{
+    const response = await api.put("/ddb/changePW/", {pw:pw, newPw: newPw, confirm: confirm})
+
+    return response.data;
+  }
+  catch (error){
+    console.error('Error updating profile:', error);
+    return "change pw fail";
+  };
+};
+
 interface SettingModalProps{
     isShown: boolean;
     setIsShown: (newState: boolean) => void;
@@ -12,27 +26,29 @@ interface SettingModalProps{
 
 const SettingModal = ({isShown, setIsShown} : SettingModalProps) => {
     const closeModal = () => {
-        setIsShown(false);
+      setIsShown(false);
     };
 
     const clickSync = () => {
-        console.log("click Sync");
+      console.log("click Sync");
     };
 
     const clickSecretMode = () => {
-        console.log("click Secret Mode");
+      console.log("click Secret Mode");
     };
 
-    const clickChangePW = () => {
-        console.log("click Change PW");
+    const clickChangePW = async() => {
+      console.log("click Change PW");
+      const result = await changePW("qwe", "asd", "asd");
+      console.log(result);
     };
 
     const clickAbout = () => {
-        console.log("click About");
+      console.log("click About");
     };
 
     const clickGitHubLink = () => {
-        console.log("click GitHub Link");
+      console.log("click GitHub Link");
     };
     
   

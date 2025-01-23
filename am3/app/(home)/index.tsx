@@ -5,15 +5,14 @@ import { Input, InputField} from '@/components/ui/input';
 import { VStack } from '@/components/ui/vstack';
 import { router } from 'expo-router';
 import { useRef } from "react";
-import axios from 'axios';
 import { jwtTokenUrl } from '@/assets/fixedData/env';
 import * as SecureStore from 'expo-secure-store';
 import api from '@/components/apis/api';
 
 const login = async(password: string) => {
- 
+  // login with password > if success get the jwt tokens
   try {
-    const response = await api.post(jwtTokenUrl, {username:"JP", password: password});
+    const response = await api.post("/token/", {username:"JP", password: password});
     const { access, refresh } = response.data;
 
     // Store tokens in SecureStore
@@ -21,7 +20,6 @@ const login = async(password: string) => {
     await SecureStore.setItemAsync('refreshToken', refresh);
 
     return true;
-
   } catch (error) {
     console.error(error);
     return false;
@@ -45,6 +43,7 @@ export default function Index() {
     }
     else{
       console.log("Login Fail")
+      // Fail UI
     };
   }
 
