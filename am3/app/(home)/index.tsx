@@ -56,7 +56,9 @@ export default function Index() {
       <Input size="xl" variant="rounded" isInvalid={false} style={styles.input}>
         <InputField 
           style={styles.inputFiled} type={"password"} textAlign="center" 
-          onChangeText={(value) => handleChange(value)}/>
+          onChangeText={(value) => handleChange(value)}
+          onSubmitEditing={() => pressEnter()}
+        />
       </Input>
 
       <Pressable onPress={() => pressEnter()} style={styles.button}>

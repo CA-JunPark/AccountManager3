@@ -135,7 +135,7 @@ export default function Main() {
       sortButton(allAccounts);
     }
     else{
-      const filteredAccounts = await searchFilter(searchTextRef.current, sortedAccounts)
+      const filteredAccounts = await searchFilter(searchTextRef.current, allAccounts)
       setSortedAccounts(filteredAccounts);
     }
   };
@@ -164,10 +164,12 @@ export default function Main() {
               <InputField
                 style={styles.inputFiled} textAlign="center"
                 selectionColor="#FF5733"
-                onChangeText={(value) => handleTextChange(value)}/>
+                onChangeText={(value) => handleTextChange(value)}
+                onSubmitEditing={() => clickSearch()}
+              />  
             </Input>
 
-            <TouchableOpacity onPress={clickSearch} style={styles.iconButtons}>
+            <TouchableOpacity onPress={() => clickSearch()} style={styles.iconButtons}>
               <FontAwesome name="search" size={24} color="black" />
             </TouchableOpacity>
 
