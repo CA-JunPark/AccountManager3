@@ -35,16 +35,17 @@ export default function Index() {
 
   const pressEnter = async() => {
     console.log("Checking password");
-    const loginResult = await login(passwordRef.current)
+    // const loginResult = await login(passwordRef.current)
 
-    if (loginResult){
-      console.log("Login Success");
-      router.push("/main");
-    }
-    else{
-      console.log("Login Fail")
-      // Fail UI
-    };
+    // if (loginResult){
+    //   console.log("Login Success");
+    //   router.push("/main");
+    // }
+    // else{
+    //   console.log("Login Fail")
+    //   // Fail UI
+    // };
+    router.push("/main");
   }
 
   return (

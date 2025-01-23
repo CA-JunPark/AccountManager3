@@ -30,7 +30,11 @@ const generateAccounts = (num: number): accountInfo[] => {
   }));
 };
 
-const tempAccounts = generateAccounts(100);
+const tempAccounts = generateAccounts(10);
+
+const searchFilter = async(key: string, accounts: accountInfo[]) => {
+
+};
 
 const emptyAccountInfo: accountInfo = {
   id: 0,
@@ -88,6 +92,11 @@ export default function Main() {
     // load()
   }, []);
 
+  // sort when isArrowUp change
+  useEffect(()=>{
+    sortButtons();
+  }, [isArrowUp])
+
   const clickSetting = () => {
     console.log('clicked setting');
     setSettingModalVisibility(true);
@@ -96,8 +105,10 @@ export default function Main() {
   const sortButtons = () => {
     const sorted = [...tempAccounts].sort((a, b) => {
       if (isArrowUp) {
+        console.log("up");
         return a.account.localeCompare(b.account);
       } else {
+        console.log("down");
         return b.account.localeCompare(a.account);
       }
     });
@@ -106,24 +117,21 @@ export default function Main() {
 
   const clickSort = () => {
     setIsArrowUp(!isArrowUp);
-    sortButtons();
   };
 
   const handleTextChange = (value: string) => {
     searchTextRef.current = value;
   };
 
-  const clickSearch = () => {
+  const clickSearch = async() => {
     console.log('search text: ', searchTextRef.current);
+    searchFilter(searchTextRef.current, sortedAccounts)
   };
 
   const clickAdd = () => {
     setIsAdding(true)
     setSelectedAccountInfo(emptyAccountInfo)
     setAccountModalVisibility(true)
-    // get max id
-
-    // set is when open
   };
 
   return (
