@@ -6,36 +6,46 @@ import { VStack } from '@/components/ui/vstack';
 import { router } from 'expo-router';
 import { useRef } from "react";
 import axios from 'axios';
-import { loginUrl } from '@/assets/fixedData/env';
+import { jwtTokenUrl } from '@/assets/fixedData/env';
+import * as SecureStore from 'expo-secure-store';
+import api from '@/components/apis/api';
 
 const login = async(password: string) => {
-  const apiUrl = loginUrl;
-  const payload = {
-    pw: password
-  }
+ 
   try {
-    const response = await axios.post(apiUrl, payload);
-    console.log("response: ", response.data);
+    const response = await api.post(jwtTokenUrl, {username:"JP", password: password});
+    const { access, refresh } = response.data;
+
+    // Store tokens in SecureStore
+    await SecureStore.setItemAsync('accessToken', access);
+    await SecureStore.setItemAsync('refreshToken', refresh);
+
+    return true;
+
   } catch (error) {
     console.error(error);
+    return false;
   }
 };
 
 export default function Index() {
   const passwordRef = useRef("");
-  
-  const checkPassword = async (password: string) => {
-    console.log("Checking password: ", password);
-    login(password)
-  };
 
   const handleChange = (value: string) => {
     passwordRef.current = value; 
   };
 
-  const pressEnter = () => {
-    checkPassword(passwordRef.current);
-    router.push("/main");
+  const pressEnter = async() => {
+    console.log("Checking password");
+    const loginResult = await login(passwordRef.current)
+
+    if (loginResult){
+      console.log("Login Success");
+      router.push("/main");
+    }
+    else{
+      console.log("Login Fail")
+    };
   }
 
   return (
