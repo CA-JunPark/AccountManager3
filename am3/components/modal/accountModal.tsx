@@ -83,7 +83,7 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
   }
 
   const addAccount = () => {
-    console.log("Add is = ", info.id);
+    console.log("Add id = ", info.id);
     
   };
 

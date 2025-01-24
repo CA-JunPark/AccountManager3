@@ -6,18 +6,7 @@ import { VStack } from '@/components/ui/vstack';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { HStack } from '@/components/ui/hstack';
 import api from '@/components/apis/api';
-
-const changePW = async(pw: string, newPw: string, confirm: string) =>{
-  try{
-    const response = await api.put("/ddb/changePW/", {pw:pw, newPw: newPw, confirm: confirm})
-
-    return response.data;
-  }
-  catch (error){
-    console.error('Error updating profile:', error);
-    return "change pw fail";
-  };
-};
+import { router } from 'expo-router';
 
 interface SettingModalProps{
     isShown: boolean;
@@ -25,76 +14,76 @@ interface SettingModalProps{
 } 
 
 const SettingModal = ({isShown, setIsShown} : SettingModalProps) => {
-    const closeModal = () => {
-      setIsShown(false);
-    };
+  console.log('setting rerender');
 
-    const clickSync = () => {
-      console.log("click Sync");
-    };
+  const closeModal = () => {
+    setIsShown(false);
+  };
 
-    const clickSecretMode = () => {
-      console.log("click Secret Mode");
-    };
+  const clickSync = () => {
+    console.log("click Sync");
+  };
 
-    const clickChangePW = async() => {
-      console.log("click Change PW");
-      const result = await changePW("qwe", "asd", "asd");
-      console.log(result);
-    };
+  const clickSecretMode = () => {
+    console.log("click Secret Mode");
+  };
 
-    const clickAbout = () => {
-      console.log("click About");
-    };
+  const clickChangePW = async() => {
+    router.push("/changePW");
+  };
 
-    const clickGitHubLink = () => {
-      console.log("click GitHub Link");
-    };
-    
+  const clickAbout = () => {
+    console.log("click About");
+  };
+
+  const clickGitHubLink = () => {
+    console.log("click GitHub Link");
+  };
   
-    return (
-    <KeyboardAvoidingView>
-        <Modal
-          visible={isShown}
-          animationType='slide'
-          transparent={true}
-          onRequestClose={() => setIsShown(false)} // TODO: open confirmation card
-          style={styles.modal}
-        >
-          <Box style={styles.mainBox}>
-            <VStack style={styles.mainVStack}>
-                <HStack style={styles.header}>
-                    <Text style={styles.headerText}> Settings </Text>
-                    <Button style={styles.close} onPress={() => closeModal()}>
-                        <Ionicons name="arrow-back" size={40} color="white" />
-                    </Button>
-                </HStack>
 
-                <VStack style={styles.buttonVStack}>
-                    <Button onPress={clickSync} style={styles.button}>
-                        <ButtonText style={styles.text}> Sync </ButtonText>
-                    </Button>
+  return (
+  <KeyboardAvoidingView>
+    <Modal
+      visible={isShown}
+      animationType='slide'
+      transparent={true}
+      onRequestClose={() => setIsShown(false)} // TODO: open confirmation card
+      style={styles.modal}
+    >
+      <Box style={styles.mainBox}>
+        <VStack style={styles.mainVStack}>
+            <HStack style={styles.header}>
+                <Text style={styles.headerText}> Settings </Text>
+                <Button style={styles.close} onPress={() => closeModal()}>
+                    <Ionicons name="arrow-back" size={40} color="white" />
+                </Button>
+            </HStack>
 
-                    <Button onPress={clickSecretMode} style={styles.button}>
-                        <ButtonText style={styles.text}> Secret Mode </ButtonText>
-                    </Button>
-                    
-                    <Button onPress={clickChangePW} style={styles.button}>
-                        <ButtonText style={styles.text}> Change PW </ButtonText>
-                    </Button>
+            <VStack style={styles.buttonVStack}>
+                <Button onPress={clickSync} style={styles.button}>
+                    <ButtonText style={styles.text}> Sync </ButtonText>
+                </Button>
 
-                    <Button onPress={clickAbout} style={styles.button}>
-                        <ButtonText style={styles.text}> About </ButtonText>
-                    </Button>
+                <Button onPress={clickSecretMode} style={styles.button}>
+                    <ButtonText style={styles.text}> Secret Mode </ButtonText>
+                </Button>
+                
+                <Button onPress={clickChangePW} style={styles.button}>
+                    <ButtonText style={styles.text}> Change PW </ButtonText>
+                </Button>
 
-                    <Button onPress={clickGitHubLink} style={styles.button}>
-                        <ButtonText style={styles.text}> GitHub Link </ButtonText>
-                    </Button>
-                </VStack>
+                <Button onPress={clickAbout} style={styles.button}>
+                    <ButtonText style={styles.text}> About </ButtonText>
+                </Button>
+
+                <Button onPress={clickGitHubLink} style={styles.button}>
+                    <ButtonText style={styles.text}> GitHub Link </ButtonText>
+                </Button>
             </VStack>
-          </Box>
-        </Modal>
-    </KeyboardAvoidingView>
+        </VStack>
+      </Box>
+    </Modal>
+  </KeyboardAvoidingView>
   )
 }
 
