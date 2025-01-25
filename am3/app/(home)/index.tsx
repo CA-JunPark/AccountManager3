@@ -47,14 +47,8 @@ export default function Index() {
     const loginResult = await login(passwordRef.current)
 
     if (loginResult){
-      console.log("Login Success");
-      router.push("/main");
+      router.navigate("/main");
     }
-    else{
-      console.log("Login Fail")
-      // Fail UI
-    };
-    // router.push("/main");
   }
 
   return (

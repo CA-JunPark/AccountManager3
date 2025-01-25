@@ -29,6 +29,7 @@ const SettingModal = ({isShown, setIsShown} : SettingModalProps) => {
   };
 
   const clickChangePW = async() => {
+    setIsShown(false);
     router.push("/changePW");
   };
 
