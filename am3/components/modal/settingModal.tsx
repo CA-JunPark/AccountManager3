@@ -1,4 +1,4 @@
-import { View, Text, KeyboardAvoidingView, Modal, StyleSheet } from 'react-native'
+import { Text, KeyboardAvoidingView, Modal, StyleSheet, Alert, Linking } from 'react-native'
 import React from 'react'
 import {Button,ButtonText} from '@/components/ui/button';
 import { Box } from '@/components/ui/box';
@@ -22,6 +22,14 @@ const SettingModal = ({isShown, setIsShown} : SettingModalProps) => {
 
   const clickSync = () => {
     console.log("click Sync");
+    Alert.alert(
+      "Sync", 
+      "Sync with Cloud Database?", 
+      [
+        {text: "Cancel"},
+        {text: "OK", onPress: () => console.log("Change it to Sync function")},
+      ]
+    );
   };
 
   const clickSecretMode = () => {
@@ -37,8 +45,8 @@ const SettingModal = ({isShown, setIsShown} : SettingModalProps) => {
     console.log("click About");
   };
 
-  const clickGitHubLink = () => {
-    console.log("click GitHub Link");
+  const clickGitHubLink = async() => {
+    await Linking.openURL("https://github.com/CA-JunPark");
   };
   
 
