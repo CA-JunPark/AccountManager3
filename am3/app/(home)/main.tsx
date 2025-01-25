@@ -18,20 +18,6 @@ import * as schema from '@/db/schema';
 import { accounts } from '@/db/schema';
 import { eq } from "drizzle-orm";
 
-// TODO change it to real data later Expo SQLite
-const generateAccounts = (num: number): accountInfo[] => {
-  return Array.from({ length: num }, (_, i) => ({
-    id: i + 1,
-    title: `title${i + 1}`,
-    account: `User${i + 1}`,
-    pw: `password${i + 1}`,
-    logo: `logo${i + 1}`,
-    note: `note${i + 1}`,
-  }));
-};
-
-const tempAccounts = generateAccounts(10);
-
 const emptyAccountInfo: accountInfo = {
   id: 0,
   title: '',
@@ -43,51 +29,36 @@ const emptyAccountInfo: accountInfo = {
 
 export default function Main() {
   const [isArrowUp, setIsArrowUp] = useState(true);
-  const [sortedAccounts, setSortedAccounts] = useState([...tempAccounts]);
+  const [allAccounts, setAllAccounts] = useState<accountInfo[]>([]);
+  const [sortedAccounts, setSortedAccounts] = useState<accountInfo[]>([]);
   const searchTextRef = useRef("");
   const [accountModalVisibility, setAccountModalVisibility] = useState(false);
   const [selectedAccountInfo, setSelectedAccountInfo] = useState(emptyAccountInfo);
   const [isAdding, setIsAdding] = useState(false);
   const [settingModalVisibility, setSettingModalVisibility] = useState(false);
 
-  const [sqlData, setSqlData] = useState<accountInfo[]>([]);
+  const [sqlData, setSqlData] = useState<accountInfo[]>();
 
   const db = useSQLiteContext();
   const drizzleDB = drizzle(db, { schema })
 
-  const allAccounts = [...tempAccounts]
-
-  useEffect(() => {
-    sortButton(sortedAccounts);
-    const load = async() => {
-      // await drizzleDB.insert(accounts).values([{
-      //     title: '1',
-      //     account: 'User1',
-      //     pw: 'password1',
-      //     logo: 'logo1',
-      //     note: 'note1'
-      //   },
-      //   {
-      //     title: '2',
-      //     account: 'User2',
-      //     pw: 'password2',
-      //     logo: 'logo2',
-      //     note: 'note2'
-      //   }]
-      // )
-
-      // await drizzleDB.delete(accounts).where(eq(accounts.title, '1'));
-      // await drizzleDB.delete(accounts).where(eq(accounts.title, '2'));
-      // await drizzleDB.delete(accounts); // delete All
+  const loadSqlite = async() => {
+    // await drizzleDB.delete(accounts).where(eq(accounts.title, '1'));
+    // await drizzleDB.delete(accounts).where(eq(accounts.title, '2'));
+    // await drizzleDB.delete(accounts); // delete All
 
     // await drizzleDB.update(accounts).set({ title: '3' }).where(eq(accounts.title, '1'));
 
-      // const data = await drizzleDB.query.accounts.findMany();
-      // console.log(data);
-      // const num = await drizzleDB.$count(accounts);
-      // console.log(num);
-    };
-    // load()
+    const accountsData = await drizzleDB.query.accounts.findMany();
+    const sortedAccountData = [...accountsData].sort((a, b) => {
+      return a.account.localeCompare(b.account);
+    });
+    setAllAccounts([...sortedAccountData]);
+    setSortedAccounts([...sortedAccountData]);
+  };
+
+  useEffect(() => {
+    loadSqlite();
   }, []);
 
   // sort when isArrowUp change

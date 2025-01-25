@@ -7,6 +7,22 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { HStack } from '@/components/ui/hstack';
 import api from '@/components/apis/api';
 import { router } from 'expo-router';
+import { useSQLiteContext } from "expo-sqlite"; // https://www.youtube.com/watch?v=AT5asDD3u_A
+import { drizzle, useLiveQuery} from 'drizzle-orm/expo-sqlite'; // https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v0311#live-queries-
+import * as schema from '@/db/schema';
+import { accounts } from '@/db/schema';
+import { eq } from "drizzle-orm";
+import { json } from 'drizzle-orm/mysql-core';
+
+const showErrorMessage = (msg: string) => {
+  Alert.alert(
+    "Error", 
+    msg, 
+    [
+      {text: "OK"},
+    ]
+  );
+};
 
 interface SettingModalProps{
     isShown: boolean;
@@ -14,20 +30,54 @@ interface SettingModalProps{
 } 
 
 const SettingModal = ({isShown, setIsShown} : SettingModalProps) => {
-  console.log('setting rerender');
+  const db = useSQLiteContext();
+  const drizzleDB = drizzle(db, { schema })
+
+  const sync = async() => {
+    const accountsCount = await drizzleDB.$count(accounts);
+    if (accountsCount === 0) {
+      // Initial Insert if App is in first used
+      try {
+        const jsonResponse = await api.get("/ddb/getAll/")
+        for (const account of jsonResponse.data) {
+          await drizzleDB.insert(accounts).values(account);
+        }
+      } catch (error: any) {
+        showErrorMessage(error.response.data.detail)
+      }
+      return;
+    }
+    else{
+      try {
+        // a list of accounts(json)
+        const localData = await drizzleDB.query.accounts.findMany();
+        // overwrite DynamoDB with local data
+        const response = await api.put("/ddb/account/", { accounts: localData });
+        Alert.alert(
+          "Sync", 
+          "Database is Overwrote", 
+          [
+            {text: "OK"},
+          ]
+        );
+      } catch (error: any) {
+        showErrorMessage(error.response.data.detail);
+      }
+    }
+    
+  };
 
   const closeModal = () => {
     setIsShown(false);
   };
 
-  const clickSync = () => {
-    console.log("click Sync");
+  const clickSync = async() => {
     Alert.alert(
       "Sync", 
       "Sync with Cloud Database?", 
       [
         {text: "Cancel"},
-        {text: "OK", onPress: () => console.log("Change it to Sync function")},
+        {text: "OK", onPress: () => sync()},
       ]
     );
   };

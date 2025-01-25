@@ -11,16 +11,6 @@ import {Button,ButtonText} from '@/components/ui/button';
 import { Input, InputField } from '@/components/ui/input';
 import { Textarea, TextareaInput } from '@/components/ui/textarea';
 
-const showMessage = (msg: string) => {
-  Alert.alert(
-    "Error", 
-    msg, 
-    [
-      {text: "OK"},
-    ]
-  );
-};
-
 export interface accountInfo{
   id: number,
   title: string,

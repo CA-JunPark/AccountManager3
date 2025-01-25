@@ -36,12 +36,13 @@ class DynamoDB:
     def count(self) -> int:
         """_summary_
 
-        Count all items in the table
+        Count all items in the table 
+        Exclude Admin (id=0)
         
         Returns:
             int: number of items in the table
         """
-        return self.table.scan(TableName="Accounts", Select='COUNT')["Count"]
+        return self.table.scan(TableName="Accounts", Select='COUNT')["Count"] - 1
 
     def maxID(self) -> int:
         """_summary_
@@ -80,6 +81,18 @@ class DynamoDB:
                 'pw'   : pw
             }
         )
+    
+    def putItems(self, items) -> None:
+        """
+        Insert multiple items into the DynamoDB table efficiently.
+        If same ID is given it will overwrite the old one with new one
+
+        Args:
+            items (list): A list of dictionaries, each representing an item to insert.
+        """
+        with self.table.batch_writer() as batch:
+            for item in items:
+                batch.put_item(Item=item)
         
     def getAll(self) -> list:
         """_summary_
