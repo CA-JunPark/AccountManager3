@@ -100,7 +100,6 @@ export default function Main() {
     setSettingModalVisibility(true);
   };
 
-  //TODO figure out why it is called multiple times
   const sortButton = (accounts: accountInfo[]) => {
     const sorted = [...accounts].sort((a, b) => {
       if (isArrowUp) {

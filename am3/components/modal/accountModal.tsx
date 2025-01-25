@@ -1,4 +1,4 @@
-import { View, Text, Modal, StyleSheet, Pressable, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
+import { Text, Modal, StyleSheet, KeyboardAvoidingView, Alert } from 'react-native'
 import React, { useEffect, useRef, useState, memo } from 'react'
 import { Box } from '@/components/ui/box';
 import { VStack } from '@/components/ui/vstack';
@@ -10,6 +10,16 @@ import { Avatar, AvatarFallbackText, AvatarImage} from '@/components/ui/avatar';
 import {Button,ButtonText} from '@/components/ui/button';
 import { Input, InputField } from '@/components/ui/input';
 import { Textarea, TextareaInput } from '@/components/ui/textarea';
+
+const showMessage = (msg: string) => {
+  Alert.alert(
+    "Error", 
+    msg, 
+    [
+      {text: "OK"},
+    ]
+  );
+};
 
 export interface accountInfo{
   id: number,
@@ -67,6 +77,14 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
 
   const deleteAccount = () => {
     console.log("Delete id =", info.id);
+    Alert.alert(
+      "Delete", 
+      "Delete Confirm", 
+      [
+        {text: "Cancel"},
+        {text: "OK", onPress: () => console.log("Change it later")},
+      ]
+    );
   };
 
   const resetTexts = () => {
@@ -79,12 +97,26 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
 
   const saveAccount = () => {
     console.log("Save id =", info.id);
-    //do Final Trim text
+    Alert.alert(
+      "Save", 
+      `Save ${currentTitle}`, 
+      [
+        {text: "Cancel"},
+        {text: "OK", onPress: () => console.log("Change it later")},
+      ]
+    );
   }
 
   const addAccount = () => {
     console.log("Add id = ", info.id);
-    
+    Alert.alert(
+      "Add", 
+      `Add ${currentTitle}`, 
+      [
+        {text: "Cancel"},
+        {text: "OK", onPress: () => console.log("Change it later")},
+      ]
+    );
   };
 
   return (
@@ -93,7 +125,7 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
         visible={isShown} 
         animationType='slide'
         transparent={true}
-        onRequestClose={() => setIsShown(false)} // TODO: open confirmation card
+        onRequestClose={() => setIsShown(false)} 
         style={styles.modal}
       >
         <Box style={styles.mainBox}>

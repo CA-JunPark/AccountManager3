@@ -56,7 +56,7 @@ const SettingModal = ({isShown, setIsShown} : SettingModalProps) => {
       visible={isShown}
       animationType='slide'
       transparent={true}
-      onRequestClose={() => setIsShown(false)} // TODO: open confirmation card
+      onRequestClose={() => setIsShown(false)}
       style={styles.modal}
     >
       <Box style={styles.mainBox}>
