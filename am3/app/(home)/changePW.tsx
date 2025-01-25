@@ -1,5 +1,5 @@
 // changePW screen
-import { Text, StyleSheet } from "react-native";
+import { Text, StyleSheet, Alert } from "react-native";
 import { Pressable } from "react-native";
 import { Input, InputField} from '@/components/ui/input';
 import { VStack } from '@/components/ui/vstack';
@@ -7,15 +7,23 @@ import { router } from 'expo-router';
 import { useRef } from "react";
 import api from '@/components/apis/api';
 
+const showMessage = (msg: string) => {
+  Alert.alert(
+    "Error", 
+    msg, 
+    [
+      {text: "OK"},
+    ]
+  );
+};
+
 const changePW = async(pw: string, newPw: string, confirm: string) =>{
   try{
-    const response = await api.put("/ddb/changePW/", {pw:pw, newPw: newPw, confirm: confirm})
-    console.log(response.data);
-    
+    await api.put("/ddb/changePW/", {pw:pw, newPw: newPw, confirm: confirm})
     return true;
   }
   catch (error: any){
-    console.log(error.response.data);
+    showMessage(error.response.data.detail);
     return false;
   };
 };
@@ -40,10 +48,7 @@ export default function Index() {
   const pressEnter = async() => {
     const result = await changePW(passwordRef.current, newPasswordRef.current, confirmRef.current);
     if (result){
-      router.push("/(home)");
-    }
-    else{
-      console.log("Nope");
+      router.navigate("/(home)");
     }
   }
 

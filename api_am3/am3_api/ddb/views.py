@@ -17,28 +17,29 @@ class ChangePW(APIView):
     permission_classes = [IsAuthenticated]
 
     def put(self, request):
-        pw = request.data.get('pw')
-        newPw = request.data.get('newPw')
-        confirm = request.data.get('confirm')
-
-        if not newPw:
-            return Response({"detail": "Password cannot be empty."}, status=status.HTTP_400_BAD_REQUEST)
-        if newPw != confirm:
-            return Response({"detail": "New passwords do not match."}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
             user = User.objects.get(username='JP')
         except User.DoesNotExist:
             return Response({"detail": "User does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
+        pw = request.data.get('pw')
+        newPw = request.data.get('newPw')
+        confirm = request.data.get('confirm')
+
         if user.check_password(pw):
+            if not newPw:
+                return Response({"detail": "Password cannot be empty."}, status=status.HTTP_400_BAD_REQUEST)
+            if not confirm:
+                return Response({"detail": "Password cannot be empty."}, status=status.HTTP_400_BAD_REQUEST)
+            if newPw != confirm:
+                return Response({"detail": "New passwords do not match."}, status=status.HTTP_400_BAD_REQUEST)
+
             user.set_password(newPw)
             user.save()
             return Response({"detail": "Password changed successfully."}, status=status.HTTP_200_OK)
         else:
             return Response({"detail": "Current password is incorrect."}, status=status.HTTP_400_BAD_REQUEST)
 
-    
 class GetAll(APIView):
     permission_classes = [IsAuthenticated]
     

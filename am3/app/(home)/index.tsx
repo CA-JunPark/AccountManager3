@@ -1,13 +1,22 @@
 // PW screen
-import { Text, StyleSheet } from "react-native";
+import { Text, StyleSheet, Alert} from "react-native";
 import { Pressable } from "react-native";
 import { Input, InputField} from '@/components/ui/input';
 import { VStack } from '@/components/ui/vstack';
 import { router } from 'expo-router';
 import { useRef } from "react";
-import { jwtTokenUrl } from '@/assets/fixedData/env';
 import * as SecureStore from 'expo-secure-store';
 import api from '@/components/apis/api';
+
+const showMessage = (msg: string) => {
+  Alert.alert(
+    "Error", 
+    msg, 
+    [
+      {text: "OK"},
+    ]
+  );
+};
 
 const login = async(password: string) => {
   // login with password > if success get the jwt tokens
@@ -21,7 +30,7 @@ const login = async(password: string) => {
 
     return true;
   } catch (error) {
-    console.error(error);
+    showMessage("Wrong Password")
     return false;
   }
 };
