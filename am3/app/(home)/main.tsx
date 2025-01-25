@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AccountModal, { accountInfo } from "@/components/modal/accountModal";
 import SettingModal from "@/components/modal/settingModal";
 import { useSQLiteContext } from "expo-sqlite"; // https://www.youtube.com/watch?v=AT5asDD3u_A
-import { drizzle, useLiveQuery} from 'drizzle-orm/expo-sqlite'; // https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v0311#live-queries-
+import { drizzle} from 'drizzle-orm/expo-sqlite'; // https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v0311#live-queries-
 import * as schema from '@/db/schema';
 import { accounts } from '@/db/schema';
 import { eq } from "drizzle-orm";
@@ -36,8 +36,6 @@ export default function Main() {
   const [selectedAccountInfo, setSelectedAccountInfo] = useState(emptyAccountInfo);
   const [isAdding, setIsAdding] = useState(false);
   const [settingModalVisibility, setSettingModalVisibility] = useState(false);
-
-  const [sqlData, setSqlData] = useState<accountInfo[]>();
 
   const db = useSQLiteContext();
   const drizzleDB = drizzle(db, { schema })
@@ -199,15 +197,18 @@ const AccountButton = memo(({selectedAccountInfo, setSelectedAccountInfo, openMo
 
   return (
     <TouchableOpacity style={styles.accountBtn} onPress={() => click()}>
-      <HStack style={{gap:"8%"}}>
+      <HStack style={{gap:"3%"}}>
         <Avatar size="xl">
-          <AvatarFallbackText size="md">{selectedAccountInfo.account}</AvatarFallbackText>
+          <AvatarFallbackText size="md">{selectedAccountInfo.title}</AvatarFallbackText>
         </Avatar>
         <VStack style={{justifyContent: 'center', alignContent:'center'}}>
-          <Text style={{fontSize:20}}>
+          <Text style={styles.accountBtnTitleText}>
+            {selectedAccountInfo.title}
+          </Text>
+          <Text style={styles.accountBtnAccountText}>
             {selectedAccountInfo.account}
           </Text>
-          <Text style={{fontSize:15}}>
+          <Text style={styles.accountBtnPWText}>
             {selectedAccountInfo.pw}
           </Text>
         </VStack>
@@ -251,13 +252,23 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   accountBtn:{
-    width: 260,
+    width: 280,
     height: 100,
     borderWidth: 1,
     borderRadius: '5%',
+    alignItems: 'flex-start',
     justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: "#E0E0E0",
     marginVertical: 10,
+    paddingLeft: 15,
+  },
+  accountBtnTitleText:{
+    fontSize: 12,
+  },
+  accountBtnAccountText:{
+    fontSize: 12,
+  },
+  accountBtnPWText:{
+    fontSize: 11,
   }
 });
