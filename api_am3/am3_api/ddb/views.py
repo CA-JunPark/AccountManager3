@@ -56,7 +56,9 @@ class AccountQuery(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        pass
+        # return maxID int
+        data = {'maxID':db.maxID()}
+        return JsonResponse(data)
     
     def put(self, request):
         # update (overwrite DynamoDB with given accounts)
@@ -72,6 +74,13 @@ class AccountQuery(APIView):
         
         return Response({"detail": "Password changed successfully."}, status=status.HTTP_200_OK)
         
-    def delete(self, request):
-        pass
 
+class DeleteAccount(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, id):
+        try:
+            db.delete(id)
+            return Response({"detail": "Account deleted successfully."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

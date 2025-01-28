@@ -10,6 +10,13 @@ import { Avatar, AvatarFallbackText, AvatarImage} from '@/components/ui/avatar';
 import {Button,ButtonText} from '@/components/ui/button';
 import { Input, InputField } from '@/components/ui/input';
 import { Textarea, TextareaInput } from '@/components/ui/textarea';
+import { useSQLiteContext } from "expo-sqlite"; // https://www.youtube.com/watch?v=AT5asDD3u_A
+import { drizzle} from 'drizzle-orm/expo-sqlite'; // https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v0311#live-queries-
+import * as schema from '@/db/schema';
+import { accounts } from '@/db/schema';
+import { eq, max } from "drizzle-orm";
+import api from '@/components/apis/api';
+import { sql } from 'drizzle-orm'
 
 export interface accountInfo{
   id: number,
@@ -33,6 +40,9 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
   const [currentPw, setCurrentPw] = useState(info.pw);
   const [currentNote, setCurrentNote] = useState(info.note);
 
+  const db = useSQLiteContext();
+  const drizzleDB = drizzle(db, { schema })
+  
   useEffect(() => {
     if (info){
       setCurrentTitle(info.title);
@@ -65,19 +75,42 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
     }
   };
 
-  const deleteAccount = () => {
-    console.log("Delete id =", info.id);
+  const deleteAccount = async() => {
+    try {
+      await drizzleDB.delete(accounts).where(eq(accounts.id, info.id));
+      const response = await api.delete(`/ddb/deleteAccount/${info.id}/`);
+      Alert.alert(
+        "Success",
+        "Account deleted successfully!",
+        [{ text: "OK", onPress: () =>  closeModal()}]
+      );
+    } catch (error: any) {
+      const errorMessage = 
+        error?.response?.data?.detail || // From Django API
+        error.message ||                 // General error message
+        "An unknown error occurred";     // Fallback message
+      Alert.alert(
+        "Error", 
+        `Fail to Delete: ${errorMessage}`, 
+        [
+          {text: "OK"},
+        ]
+      );
+    }
+  };
+
+  const clickDeleteAccount = () => {
     Alert.alert(
       "Delete", 
       "Delete Confirm", 
       [
         {text: "Cancel"},
-        {text: "OK", onPress: () => console.log("Change it later")},
+        {text: "OK", onPress: async() => await deleteAccount()},
       ]
     );
   };
 
-  const resetTexts = () => {
+  const resetInfo = () => {
     setCurrentTitle(info.title);
     setCurrentAccount(info.account);
     setCurrentPw(info.pw);
@@ -85,26 +118,76 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
     console.log("reset id =", info.id);
   };
 
-  const saveAccount = () => {
+  const saveAccount = async() => {
+    await drizzleDB.update(accounts).
+      set({ title: currentTitle, 
+            account: currentAccount, 
+            pw: currentPw, 
+            note: currentNote}).
+      where(eq(accounts.id, info.id));
+  };
+
+  const clickSaveAccount = () => {
     console.log("Save id =", info.id);
     Alert.alert(
       "Save", 
       `Save ${currentTitle}`, 
       [
         {text: "Cancel"},
-        {text: "OK", onPress: () => console.log("Change it later")},
+        {text: "OK", onPress: async() => await saveAccount()},
       ]
     );
   }
 
-  const addAccount = () => {
-    console.log("Add id = ", info.id);
+  const getNewMaxID = async() => {
+    const maxIdResult = await drizzleDB.select().from(accounts).orderBy(sql`${accounts.id} desc`).limit(1);
+    const newID = maxIdResult[0].id + 1;
+    return newID;
+  };
+
+  const addAccount = async() => {
+    try {
+      const newID = await getNewMaxID();
+      console.log(newID);
+      
+      const insertedID = await drizzleDB.insert(accounts).values(
+        {
+          title: currentTitle,
+          account: currentAccount,
+          pw: currentPw,
+          logo: '', //TODO Add the logo property here
+          note: currentNote,
+          id: newID,
+        }
+      ).returning({ insertedId: accounts.id });
+
+      Alert.alert(
+        "Added", 
+        `New Account ${currentTitle} is added`, 
+        [
+          {text: "OK", onPress: () => closeModal()},
+        ]
+      );
+      
+    } catch (error) {
+      console.error("Insertion error:", error);
+      Alert.alert(
+        "Error", 
+        `Fail adding ${currentTitle}`, 
+        [
+          {text: "OK"},
+        ]
+      );
+    }
+  };
+
+  const clickAddAccount = () => {
     Alert.alert(
       "Add", 
       `Add ${currentTitle}`, 
       [
         {text: "Cancel"},
-        {text: "OK", onPress: () => console.log("Change it later")},
+        {text: "OK", onPress: async() => await addAccount()},
       ]
     );
   };
@@ -147,26 +230,26 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
               {!isAdding ? (
                 <HStack style={styles.bottomHStack}>
                   <Button size="md" style={styles.bottomBtn}
-                    onPress={() => deleteAccount()}
+                    onPress={() => clickDeleteAccount()}
                   >
                     <Text style={styles.bottomBtnText}> Delete </Text>
                   </Button>
-                  <Button onPress={() => resetTexts()}>
+                  <Button onPress={() => resetInfo()}>
                     <Ionicons name="refresh" size={24} color="white" />
                   </Button>
                   <Button size="md" style={styles.bottomBtn}
-                    onPress={() => saveAccount()}
+                    onPress={() => clickSaveAccount()}
                   >
                     <Text style={styles.bottomBtnText}> Save </Text>
                   </Button>
                 </HStack>
               ): (
                 <HStack style={styles.bottomHStack}>
-                  <Button onPress={() => resetTexts()}>
+                  <Button onPress={() => resetInfo()}>
                     <Ionicons name="refresh" size={24} color="white" />
                   </Button>
                   <Button size="md" style={styles.bottomBtn}
-                    onPress={() => addAccount()}
+                    onPress={() => clickAddAccount()}
                   >
                     <Text style={styles.bottomBtnText}> Add </Text>
                   </Button>
@@ -202,7 +285,7 @@ const CustomInputField = memo( ( { title, content, isNote, inputState, setInput 
           <Input style={{ width: fieldWidth}}>
             <InputField style={{color:'white'}} selectionColor="#FF5733"
               defaultValue={content} value={inputState} 
-              onChangeText={setInput}
+              onChangeText={(text:string) => setInput(text)}
               onBlur={() => trim(inputState)}
             /> 
           </Input>
@@ -210,7 +293,7 @@ const CustomInputField = memo( ( { title, content, isNote, inputState, setInput 
           <Textarea style={{width: fieldWidth, height:200}}>
             <TextareaInput style={{textAlignVertical: 'top', color:'white'}}  selectionColor="#FF5733"
               defaultValue={content} value={inputState}
-              onChangeText={setInput}
+              onChangeText={(text:string) => setInput(text)}
               onBlur={() => trim(inputState)}
             />
           </Textarea>

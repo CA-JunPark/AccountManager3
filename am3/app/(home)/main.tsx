@@ -41,12 +41,6 @@ export default function Main() {
   const drizzleDB = drizzle(db, { schema })
 
   const loadSqlite = async() => {
-    // await drizzleDB.delete(accounts).where(eq(accounts.title, '1'));
-    // await drizzleDB.delete(accounts).where(eq(accounts.title, '2'));
-    // await drizzleDB.delete(accounts); // delete All
-
-    // await drizzleDB.update(accounts).set({ title: '3' }).where(eq(accounts.title, '1'));
-
     const accountsData = await drizzleDB.query.accounts.findMany();
     const sortedAccountData = [...accountsData].sort((a, b) => {
       return a.account.localeCompare(b.account);
@@ -55,14 +49,15 @@ export default function Main() {
     setSortedAccounts([...sortedAccountData]);
   };
 
-  useEffect(() => {
-    loadSqlite();
-  }, []);
-
   // sort when isArrowUp change
   useEffect(()=>{
     sortButton(sortedAccounts);
   }, [isArrowUp])
+
+  // update accounts when added or saved or deleted + initial load
+  useEffect(()=>{
+    loadSqlite();
+  },[accountModalVisibility])
 
   const clickSetting = () => {
     console.log('clicked setting');
@@ -199,7 +194,11 @@ const AccountButton = memo(({selectedAccountInfo, setSelectedAccountInfo, openMo
     <TouchableOpacity style={styles.accountBtn} onPress={() => click()}>
       <HStack style={{gap:"3%"}}>
         <Avatar size="xl">
-          <AvatarFallbackText size="md">{selectedAccountInfo.title}</AvatarFallbackText>
+          {selectedAccountInfo.logo === '' ? (
+            <AvatarFallbackText size="md">{selectedAccountInfo.title}</AvatarFallbackText>
+          ) : (
+            <AvatarImage source={{ uri: selectedAccountInfo.logo }} />
+          )}
         </Avatar>
         <VStack style={{justifyContent: 'center', alignContent:'center'}}>
           <Text style={styles.accountBtnTitleText}>
