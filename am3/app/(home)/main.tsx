@@ -84,11 +84,9 @@ export default function Main() {
   };
 
   const searchFilter = async(key: string, accounts: accountInfo[]) => {
+    const regex = new RegExp(key, 'i');
     return accounts.filter(account => 
-      account.title.includes(key) || 
-      account.account.includes(key) || 
-      account.pw.includes(key) || 
-      account.note.includes(key)
+      regex.test(account.title)
     );
   };
 
