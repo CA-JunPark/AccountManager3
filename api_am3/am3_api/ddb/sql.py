@@ -55,12 +55,13 @@ class DynamoDB:
         accounts = self.table.scan()["Items"]
         return max(int(account['id']) for account in accounts)
     
-    def put(self, title: str = "", account: str = "", pw: str = "", logo: str = "", note: str = "") -> None:
+    def put(self, id: int = None, title: str = "", account: str = "", pw: str = "", logo: str = "", note: str = "") -> None:
         """_summary_
         
         Put an item in the table
         
         Args:
+            id (int): primary key id 
             title (str): title for the account
             account (str): account
             pw (str): hashed password
@@ -71,9 +72,12 @@ class DynamoDB:
         if title+account+pw+logo+note == "":
             return 
         
+        if not id:
+            id = self.maxID()+1
+        
         self.table.put_item(
             Item={
-                'id': self.maxID()+1,
+                'id': id,
                 'account': account,
                 'logo' : logo,
                 'title' : title,
@@ -90,9 +94,16 @@ class DynamoDB:
         Args:
             items (list): A list of dictionaries, each representing an item to insert.
         """
-        with self.table.batch_writer() as batch:
-            for item in items:
-                batch.put_item(Item=item)
+        
+        # DynamoDB batch write limit is 25 items per request
+        chunk_size = 25
+        chunks = [items[i:i + chunk_size] for i in range(0, len(items), chunk_size)]
+        print(chunks)
+        
+        for chunk in chunks:
+            with self.table.batch_writer() as batch:
+                for item in chunk:
+                    batch.put_item(Item=item)
         
     def getAll(self) -> list:
         """_summary_

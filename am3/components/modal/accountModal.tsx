@@ -119,16 +119,41 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
   };
 
   const saveAccount = async() => {
-    await drizzleDB.update(accounts).
-      set({ title: currentTitle, 
-            account: currentAccount, 
-            pw: currentPw, 
-            note: currentNote}).
-      where(eq(accounts.id, info.id));
+    const updatedAccount = {
+      targetID: info.id,
+      title: currentTitle,
+      account: currentAccount,
+      pw: currentPw,
+      logo: '', //TODO Add the logo property here
+      note: currentNote,
+    }
+    try {
+      await drizzleDB.update(accounts).
+        set({ title: currentTitle, 
+              account: currentAccount, 
+              pw: currentPw, 
+              note: currentNote}).
+        where(eq(accounts.id, info.id));
+      
+      await api.put("/ddb/account/", { account: updatedAccount })
+        
+      Alert.alert(
+        "Success",
+        `${currentTitle} saved successfully!`,
+        [{ text: "OK", onPress: () =>  closeModal()}]
+      );
+    } catch (error: any) {
+      Alert.alert(
+        "Error", 
+        error.message, 
+        [
+          {text: "OK"},
+        ]
+      );
+    }
   };
 
   const clickSaveAccount = () => {
-    console.log("Save id =", info.id);
     Alert.alert(
       "Save", 
       `Save ${currentTitle}`, 
@@ -149,17 +174,18 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
     try {
       const newID = await getNewMaxID();
       console.log(newID);
+
+      const newAccount = {
+        title: currentTitle,
+        account: currentAccount,
+        pw: currentPw,
+        logo: '', //TODO Add the logo property here
+        note: currentNote,
+        id: newID,
+      }
       
-      const insertedID = await drizzleDB.insert(accounts).values(
-        {
-          title: currentTitle,
-          account: currentAccount,
-          pw: currentPw,
-          logo: '', //TODO Add the logo property here
-          note: currentNote,
-          id: newID,
-        }
-      ).returning({ insertedId: accounts.id });
+      await drizzleDB.insert(accounts).values(newAccount)
+      await api.post("/ddb/account/", { account: newAccount });
 
       Alert.alert(
         "Added", 

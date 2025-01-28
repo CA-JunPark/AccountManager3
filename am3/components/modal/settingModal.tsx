@@ -14,16 +14,6 @@ import { accounts } from '@/db/schema';
 import { eq } from "drizzle-orm";
 import { json } from 'drizzle-orm/mysql-core';
 
-const showErrorMessage = (msg: string) => {
-  Alert.alert(
-    "Error", 
-    msg, 
-    [
-      {text: "OK"},
-    ]
-  );
-};
-
 interface SettingModalProps{
     isShown: boolean;
     setIsShown: (newState: boolean) => void;
@@ -34,37 +24,31 @@ const SettingModal = ({isShown, setIsShown} : SettingModalProps) => {
   const drizzleDB = drizzle(db, { schema })
 
   const sync = async() => {
-    const accountsCount = await drizzleDB.$count(accounts);
-    if (accountsCount === 0) {
-      // Initial Insert if App is in first used
-      try {
-        const jsonResponse = await api.get("/ddb/getAll/")
-        for (const account of jsonResponse.data) {
-          await drizzleDB.insert(accounts).values(account);
-        }
-      } catch (error: any) {
-        showErrorMessage(error.response.data.detail)
-      }
-      return;
+    // load all the accounts in the cloud 
+    try {
+      const jsonResponse = await api.get("/ddb/getAll/")
+      console.log(`Number of accounts fetched: ${jsonResponse.data.length}`);
+
+      for (const account of jsonResponse.data) {
+        await drizzleDB.insert(accounts).values(account).onConflictDoNothing();
+      };
+      Alert.alert(
+        "Sync", 
+        "Sync Success", 
+        [
+          {text: "OK"},
+        ]
+      );
+    } catch (error: any) {
+      Alert.alert(
+        "Error", 
+        error.response.data.detail, 
+        [
+          {text: "OK"},
+        ]
+      );
     }
-    else{
-      try {
-        // a list of accounts(json)
-        const localData = await drizzleDB.query.accounts.findMany();
-        // overwrite DynamoDB with local data
-        const response = await api.put("/ddb/account/", { accounts: localData });
-        Alert.alert(
-          "Sync", 
-          "Database is Overwrote", 
-          [
-            {text: "OK"},
-          ]
-        );
-      } catch (error: any) {
-        showErrorMessage(error.response.data.detail);
-      }
-    }
-    
+    return;
   };
 
   const closeModal = () => {

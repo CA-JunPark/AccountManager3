@@ -43,7 +43,7 @@ export default function Main() {
   const loadSqlite = async() => {
     const accountsData = await drizzleDB.query.accounts.findMany();
     const sortedAccountData = [...accountsData].sort((a, b) => {
-      return a.account.localeCompare(b.account);
+      return a.title.localeCompare(b.title);
     });
     setAllAccounts([...sortedAccountData]);
     setSortedAccounts([...sortedAccountData]);
@@ -67,9 +67,9 @@ export default function Main() {
   const sortButton = (accounts: accountInfo[]) => {
     const sorted = [...accounts].sort((a, b) => {
       if (isArrowUp) {
-        return a.account.localeCompare(b.account);
+        return a.title.localeCompare(b.title);
       } else {
-        return b.account.localeCompare(a.account);
+        return b.title.localeCompare(a.title);
       }
     });
     setSortedAccounts(sorted);

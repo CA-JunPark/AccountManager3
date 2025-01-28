@@ -60,19 +60,26 @@ class AccountQuery(APIView):
         data = {'maxID':db.maxID()}
         return JsonResponse(data)
     
-    def put(self, request):
-        # update (overwrite DynamoDB with given accounts)
+    def post(self, request):
+        # upload one account
         try:
-            currentAccounts = []
-            for account in request.data.get("accounts"):
-                serializedAccount = AccountInfoSerializer(data=account)
-                if serializedAccount.is_valid():
-                    currentAccounts.append(serializedAccount.data)
-            db.putItems(currentAccounts)
+            account = request.data.get("account")
+            db.put(**account)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        return Response({"detail": "Password changed successfully."}, status=status.HTTP_200_OK)
+        return Response({"detail": "New Account is Added"}, status=status.HTTP_200_OK)
+    
+    def put(self, request):
+        # update one account
+        try:
+            account = request.data.get("account")
+            db.update(**account)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        return Response({"detail": "Account is updated"}, status=status.HTTP_200_OK)
+    
         
 
 class DeleteAccount(APIView):
