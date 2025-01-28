@@ -39,6 +39,9 @@ const SettingModal = ({isShown, setIsShown} : SettingModalProps) => {
           {text: "OK"},
         ]
       );
+
+      // close setting
+      closeModal()
     } catch (error: any) {
       Alert.alert(
         "Error", 

@@ -57,7 +57,7 @@ export default function Main() {
   // update accounts when added or saved or deleted + initial load
   useEffect(()=>{
     loadSqlite();
-  },[accountModalVisibility])
+  },[accountModalVisibility, settingModalVisibility])
 
   const clickSetting = () => {
     console.log('clicked setting');
