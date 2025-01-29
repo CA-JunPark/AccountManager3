@@ -52,6 +52,21 @@ export default function Index() {
     }
   }
 
+  const pressCancel = () => {
+    Alert.alert(
+      "Close", 
+      "Go back to Main?", 
+      [
+        {text: "Cancel"},
+        {text: "OK", onPress: () => backToMain()},
+      ]
+    );
+  };
+
+  const backToMain = () => {
+    router.back();
+  };
+
   return (
     <VStack style={styles.mainVStack}>
 
@@ -84,6 +99,9 @@ export default function Index() {
 
       <Pressable onPress={() => pressEnter()} style={styles.button}>
         <Text style={styles.enterText}>Enter</Text>
+      </Pressable>
+      <Pressable onPress={() => pressCancel()} style={styles.button}>
+        <Text style={styles.enterText}>Cancel</Text>
       </Pressable>
 
     </VStack>
