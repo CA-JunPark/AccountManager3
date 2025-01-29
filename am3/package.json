@@ -25,6 +25,7 @@
     "@gluestack-ui/overlay": "^0.1.16",
     "@gluestack-ui/textarea": "^0.1.24",
     "@gluestack-ui/toast": "^1.0.8",
+    "@react-aria/utils": "^3.27.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "axios": "^1.7.9",

@@ -8,18 +8,19 @@ import { HStack } from '@/components/ui/hstack';
 import api from '@/components/apis/api';
 import { router } from 'expo-router';
 import { useSQLiteContext } from "expo-sqlite"; // https://www.youtube.com/watch?v=AT5asDD3u_A
-import { drizzle, useLiveQuery} from 'drizzle-orm/expo-sqlite'; // https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v0311#live-queries-
+import { drizzle} from 'drizzle-orm/expo-sqlite'; // https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v0311#live-queries-
 import * as schema from '@/db/schema';
 import { accounts } from '@/db/schema';
-import { eq } from "drizzle-orm";
-import { json } from 'drizzle-orm/mysql-core';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 interface SettingModalProps{
     isShown: boolean;
     setIsShown: (newState: boolean) => void;
+    isSecretMode: boolean;
+    setIsSecretMode: (newState: boolean) => void;
 } 
 
-const SettingModal = ({isShown, setIsShown} : SettingModalProps) => {
+const SettingModal = ({isShown, setIsShown, isSecretMode, setIsSecretMode} : SettingModalProps) => {
   const db = useSQLiteContext();
   const drizzleDB = drizzle(db, { schema })
 
@@ -70,7 +71,7 @@ const SettingModal = ({isShown, setIsShown} : SettingModalProps) => {
   };
 
   const clickSecretMode = () => {
-    console.log("click Secret Mode");
+    setIsSecretMode(!isSecretMode)
   };
 
   const clickChangePW = async() => {
@@ -111,7 +112,12 @@ const SettingModal = ({isShown, setIsShown} : SettingModalProps) => {
                 </Button>
 
                 <Button onPress={clickSecretMode} style={styles.button}>
-                    <ButtonText style={styles.text}> Secret Mode </ButtonText>
+                  {isSecretMode ? (
+                    <MaterialIcons name="check-box" size={24} color="white" />
+                  ) : (
+                    <MaterialIcons name="check-box-outline-blank" size={24} color="white" />
+                  )}
+                  <ButtonText style={styles.text}> Secret Mode </ButtonText>
                 </Button>
                 
                 <Button onPress={clickChangePW} style={styles.button}>

@@ -36,6 +36,7 @@ export default function Main() {
   const [selectedAccountInfo, setSelectedAccountInfo] = useState(emptyAccountInfo);
   const [isAdding, setIsAdding] = useState(false);
   const [settingModalVisibility, setSettingModalVisibility] = useState(false);
+  const [isSecretMode, setIsSecretMode] = useState(false);
 
   const db = useSQLiteContext();
   const drizzleDB = drizzle(db, { schema })
@@ -145,6 +146,7 @@ export default function Main() {
               setSelectedAccountInfo={setSelectedAccountInfo} 
               openModal={setAccountModalVisibility}
               setIsAdding={setIsAdding}
+              isSecretMode={isSecretMode}
             />
           ))}
         </ScrollView>
@@ -165,6 +167,8 @@ export default function Main() {
       <SettingModal
         isShown={settingModalVisibility}
         setIsShown={setSettingModalVisibility}
+        isSecretMode={isSecretMode}
+        setIsSecretMode={setIsSecretMode}
       >
       </SettingModal>
 
@@ -177,11 +181,12 @@ interface AccountButtonProps {
   setSelectedAccountInfo: (newInfo: accountInfo) => void;
   openModal: (visibility: boolean) => void;
   setIsAdding: (newIsAdding: boolean) => void;
+  isSecretMode: boolean;
 }
 
 // memo makes this object will only re-render if its props change
 // TODO : change AvatarFallbackText to AvatarImage
-const AccountButton = memo(({selectedAccountInfo, setSelectedAccountInfo, openModal, setIsAdding}: AccountButtonProps) => {
+const AccountButton = memo(({selectedAccountInfo, setSelectedAccountInfo, openModal, setIsAdding, isSecretMode}: AccountButtonProps) => {
   const click = () => {
     setSelectedAccountInfo(selectedAccountInfo);
     setIsAdding(false);
@@ -206,7 +211,7 @@ const AccountButton = memo(({selectedAccountInfo, setSelectedAccountInfo, openMo
             {selectedAccountInfo.account}
           </Text>
           <Text style={styles.accountBtnPWText}>
-            {selectedAccountInfo.pw}
+            {isSecretMode ? "***********" : selectedAccountInfo.pw}
           </Text>
         </VStack>
       </HStack>
