@@ -66,6 +66,7 @@ class AccountQuery(APIView):
             account = request.data.get("account")
             db.put(**account)
         except Exception as e:
+            print(e)
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return Response({"detail": "New Account is Added"}, status=status.HTTP_200_OK)
@@ -80,8 +81,6 @@ class AccountQuery(APIView):
         
         return Response({"detail": "Account is updated"}, status=status.HTTP_200_OK)
     
-        
-
 class DeleteAccount(APIView):
     permission_classes = [IsAuthenticated]
 

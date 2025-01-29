@@ -17,6 +17,7 @@ import { accounts } from '@/db/schema';
 import { eq, max } from "drizzle-orm";
 import api from '@/components/apis/api';
 import { sql } from 'drizzle-orm'
+import * as FileSystem from 'expo-file-system';
 
 export interface accountInfo{
   id: number,
@@ -35,19 +36,37 @@ interface AccountButtonProps{
 }
 
 export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButtonProps) => {
+  const [currentID, setCurrentID] = useState(info.id);
   const [currentTitle, setCurrentTitle] = useState(info.title);
   const [currentAccount, setCurrentAccount] = useState(info.account);
   const [currentPw, setCurrentPw] = useState(info.pw);
+  const [currentLogo, setCurrentLogo] = useState(info.logo);
   const [currentNote, setCurrentNote] = useState(info.note);
+  const [logoUri, setLogoUri] = useState<string | null>(null);
 
   const db = useSQLiteContext();
   const drizzleDB = drizzle(db, { schema })
-  
+
   useEffect(() => {
     if (info){
+      if (info.id === 0){
+        (async () => {
+          const newID = await getNewMaxID();
+          setCurrentID(newID);
+        })();
+      }
+      else{
+        setCurrentID(info.id);
+      };
       setCurrentTitle(info.title);
       setCurrentAccount(info.account);
       setCurrentPw(info.pw);
+      setCurrentLogo(info.logo);
+      (async () => {
+        const fileUri = await convertBase64toPngURI(info.logo);
+        await setLogoUri(fileUri);
+        console.log(info.id);
+      })();
       setCurrentNote(info.note);
     }
   }, [info]);
@@ -56,8 +75,14 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
     setIsShown(false);
   };
 
-  const uploadLogo = () => {
-    console.log("uploading Logo");
+  const convertBase64toPngURI = async (base64String: string) => {
+    const fileUri = `${FileSystem.documentDirectory}temp_image${currentID}.png`;
+    await FileSystem.writeAsStringAsync(fileUri, base64String, { encoding: FileSystem.EncodingType.Base64 });
+    return fileUri;
+  };
+
+  const uploadLogo = (base64Image: string) => {
+    setCurrentLogo(base64Image);
   };
 
   const pickFile = async () => {
@@ -67,8 +92,15 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
         copyToCacheDirectory: true, 
       });
       if (!result.canceled) {
-        console.log('File URI:', result.assets[0].name);
-        uploadLogo();
+        const fileUri = result.assets[0].uri;
+
+        const fileInfo = await FileSystem.getInfoAsync(fileUri);
+        if (fileInfo.exists && fileInfo.size && fileInfo.size > 400 * 1024) { // 409,600 bytes
+          Alert.alert("Error", "File size exceeds 400KB. Please choose a smaller file.");
+          return;
+        }
+        const base64 = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
+        uploadLogo(base64);
       }
     } catch (error) {
       console.error('Error picking file:', error);
@@ -120,18 +152,19 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
 
   const saveAccount = async() => {
     const updatedAccount = {
-      targetID: info.id,
+      targetID: currentID,
       title: currentTitle,
       account: currentAccount,
       pw: currentPw,
-      logo: '', //TODO Add the logo property here
+      logo: currentLogo,
       note: currentNote,
     }
     try {
       await drizzleDB.update(accounts).
         set({ title: currentTitle, 
               account: currentAccount, 
-              pw: currentPw, 
+              pw: currentPw,
+              logo: currentLogo, 
               note: currentNote}).
         where(eq(accounts.id, info.id));
       
@@ -179,7 +212,7 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
         title: currentTitle,
         account: currentAccount,
         pw: currentPw,
-        logo: '', //TODO Add the logo property here
+        logo: currentLogo,
         note: currentNote,
         id: newID,
       }
@@ -238,7 +271,11 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
 
               <HStack style={styles.logoHStack}>
                 <Avatar size="2xl">
-                  <AvatarFallbackText size="md">{info.account}</AvatarFallbackText> 
+                  {info.logo ? (
+                  <AvatarImage source={{ uri: `${logoUri}` }} />
+                  ) : (
+                  <AvatarFallbackText size="md">{info.account}</AvatarFallbackText>
+                  )}
                 </Avatar>
                 <Box style={{justifyContent:'center'}}>
                     <Button size='lg' style={styles.uploadBtn} onPress={() => pickFile()}>
