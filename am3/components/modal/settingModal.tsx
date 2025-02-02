@@ -31,6 +31,9 @@ const SettingModal = ({isShown, setIsShown, isSecretMode, setIsSecretMode} : Set
       console.log(`Number of accounts fetched: ${jsonResponse.data.length}`);
 
       for (const account of jsonResponse.data) {
+        // if (account.logo === ""){
+        //   account.logo = "@/assets/images/react-logo.png";
+        // };
         await drizzleDB.insert(accounts).values(account).onConflictDoNothing();
       };
       Alert.alert(

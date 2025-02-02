@@ -17,6 +17,8 @@ import { drizzle} from 'drizzle-orm/expo-sqlite'; // https://orm.drizzle.team/do
 import * as schema from '@/db/schema';
 import { accounts } from '@/db/schema';
 import { eq } from "drizzle-orm";
+import * as FileSystem from 'expo-file-system';
+import { LogoBubble, convertBase64toPngURI } from '@/components/common/Logo';
 
 const emptyAccountInfo: accountInfo = {
   id: 0,
@@ -51,7 +53,12 @@ export default function Main() {
   };
 
   // sort when isArrowUp change
-  useEffect(()=>{
+  useEffect(() => {
+    // TODO Delete this at the end
+    // const deleteAccounts = async () => {
+    //   await drizzleDB.delete(accounts);
+    // };
+    // deleteAccounts();
     sortButton(sortedAccounts);
   }, [isArrowUp])
 
@@ -61,7 +68,6 @@ export default function Main() {
   },[accountModalVisibility, settingModalVisibility])
 
   const clickSetting = () => {
-    console.log('clicked setting');
     setSettingModalVisibility(true);
   };
 
@@ -193,15 +199,27 @@ const AccountButton = memo(({selectedAccountInfo, setSelectedAccountInfo, openMo
     openModal(true);    
   };
 
+  const [logoUri, setLogoUri] = useState("");
+
+  const createLogoUri = async () => {
+    const uri = await convertBase64toPngURI(selectedAccountInfo.logo, selectedAccountInfo.id);
+    setLogoUri(uri);
+  };
+
+  useEffect(() => {
+    if (selectedAccountInfo.logo === "@/assets/images/react-logo.png"){
+      setLogoUri("@/assets/images/react-logo.png");
+    }
+    else{
+      createLogoUri();
+    };
+  }, [selectedAccountInfo.logo]);
+
   return (
     <TouchableOpacity style={styles.accountBtn} onPress={() => click()}>
       <HStack style={{gap:"3%"}}>
         <Avatar size="xl">
-          {selectedAccountInfo.logo === '' ? (
-            <AvatarFallbackText size="md">{selectedAccountInfo.title}</AvatarFallbackText>
-          ) : (
-            <AvatarImage source={{ uri: selectedAccountInfo.logo }} />
-          )}
+          <LogoBubble title={selectedAccountInfo.title} logo={logoUri} />
         </Avatar>
         <VStack style={{justifyContent: 'center', alignContent:'center'}}>
           <Text style={styles.accountBtnTitleText}>

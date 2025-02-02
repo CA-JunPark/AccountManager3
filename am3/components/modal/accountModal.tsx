@@ -18,6 +18,7 @@ import { eq, max } from "drizzle-orm";
 import api from '@/components/apis/api';
 import { sql } from 'drizzle-orm'
 import * as FileSystem from 'expo-file-system';
+import { LogoBubble, convertBase64toPngURI } from '@/components/common/Logo';
 
 export interface accountInfo{
   id: number,
@@ -42,8 +43,8 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
   const [currentPw, setCurrentPw] = useState(info.pw);
   const [currentLogo, setCurrentLogo] = useState(info.logo);
   const [currentNote, setCurrentNote] = useState(info.note);
-  const [logoUri, setLogoUri] = useState<string | null>(null);
-
+  const [logoUri, setLogoUri] = useState("");
+  
   const db = useSQLiteContext();
   const drizzleDB = drizzle(db, { schema })
 
@@ -62,23 +63,27 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
       setCurrentAccount(info.account);
       setCurrentPw(info.pw);
       setCurrentLogo(info.logo);
-      (async () => {
-        const fileUri = await convertBase64toPngURI(info.logo);
-        await setLogoUri(fileUri);
-        console.log(info.id);
-      })();
       setCurrentNote(info.note);
     }
   }, [info]);
 
+  const createLogoUri = async () => {
+      const uri = await convertBase64toPngURI(info.logo, info.id);
+      setLogoUri(uri);
+    };
+
+  useEffect(() => {
+    if (info.logo === "@/assets/images/react-logo.png"){
+      setLogoUri("@/assets/images/react-logo.png");
+    }
+    else{
+      createLogoUri();
+    };
+  }, [info.logo]);
+  
+
   const closeModal = () => {
     setIsShown(false);
-  };
-
-  const convertBase64toPngURI = async (base64String: string) => {
-    const fileUri = `${FileSystem.documentDirectory}temp_image${currentID}.png`;
-    await FileSystem.writeAsStringAsync(fileUri, base64String, { encoding: FileSystem.EncodingType.Base64 });
-    return fileUri;
   };
 
   const uploadLogo = (base64Image: string) => {
@@ -270,12 +275,8 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
               </HStack>
 
               <HStack style={styles.logoHStack}>
-                <Avatar size="2xl">
-                  {info.logo ? (
-                  <AvatarImage source={{ uri: `${logoUri}` }} />
-                  ) : (
-                  <AvatarFallbackText size="md">{info.account}</AvatarFallbackText>
-                  )}
+                <Avatar size="xl">
+                  <LogoBubble title={info.title} logo={logoUri} />
                 </Avatar>
                 <Box style={{justifyContent:'center'}}>
                     <Button size='lg' style={styles.uploadBtn} onPress={() => pickFile()}>
