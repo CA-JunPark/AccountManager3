@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallbackText, AvatarImage} from '@/components/ui/avatar';
+import { memo } from 'react';
 import * as FileSystem from 'expo-file-system';
 
 interface LogoBubbleProps {
@@ -6,17 +7,20 @@ title: string;
 logo: string;
 }
 
-export const LogoBubble = ({ title, logo }: LogoBubbleProps) => {
+// ???????? why it says  (NOBRIDGE) WARN  source.uri should not be an empty string [Component Stack] 
+// if only logo === "@/assets/images/react-logo.png" is given
+export const LogoBubble = memo(({ title, logo }: LogoBubbleProps) => {
+    const noLogo = logo === '' || logo === "@/assets/images/react-logo.png";
     return (
     <Avatar size="xl">
-        {logo === '' || logo === "@/assets/images/react-logo.png" ? (
+        {noLogo ? (
         <AvatarFallbackText size="md">{title}</AvatarFallbackText>
         ) : (
         <AvatarImage source={{ uri: logo }} />
         )}
     </Avatar>
     );
-};    
+});    
 
 export const convertBase64toPngURI = async (base64String: string, id: number) => {
   const fileUri = `${FileSystem.documentDirectory}temp_image${id}.png`;
