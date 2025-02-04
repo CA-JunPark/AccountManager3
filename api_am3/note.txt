@@ -1,1 +1,36 @@
-python manage.py runserver 0.0.0.0:8000
+python3 manage.py runserver 0.0.0.0:8000
+
+Nginx setting
+    sudo nano /etc/nginx/sites-available/threePages
+        server {
+            listen 80;
+            server_name _;
+
+            # location must match with websocket urlpattern
+            location /ws/audio/ { 
+                proxy_pass http://127.0.0.1:8000;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "upgrade";
+                proxy_set_header Host $host;
+            }
+            
+            # For all other HTTP connections
+            location / {
+                proxy_pass http://127.0.0.1:8000;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+        }
+
+    sudo nginx -t
+    sudo systemctl reload nginx      or     sudo systemctl restart nginx
+
+hohup
+    nohup ~/mobile-application/env/bin/python manage.py runserver 0.0.0.0:8000 &
+
+kill
+    ps aux | grep runserver
+    kill -9 PID
