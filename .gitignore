@@ -198,3 +198,5 @@ env.js
 db.*
 
 .vscode
+
+nohup.out
