@@ -11,7 +11,7 @@ import {Button,ButtonText} from '@/components/ui/button';
 import { Input, InputField } from '@/components/ui/input';
 import { Textarea, TextareaInput } from '@/components/ui/textarea';
 import { useSQLiteContext } from "expo-sqlite"; // https://www.youtube.com/watch?v=AT5asDD3u_A
-import { drizzle} from 'drizzle-orm/expo-sqlite'; // https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v0311#live-queries-
+import { drizzle, ExpoSQLiteDatabase} from 'drizzle-orm/expo-sqlite'; // https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v0311#live-queries-
 import * as schema from '@/db/schema';
 import { accounts } from '@/db/schema';
 import { eq, max } from "drizzle-orm";
@@ -29,14 +29,15 @@ export interface accountInfo{
   note: string
 };
 
-interface AccountButtonProps{
+interface AccountButtonProps {
   isShown: boolean;
   setIsShown: (newState: boolean) => void;
   info: accountInfo;
   isAdding: boolean;
+  drizzleDB: ExpoSQLiteDatabase<typeof schema> ;
 }
 
-export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButtonProps) => {
+export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: AccountButtonProps) => {
   const [currentID, setCurrentID] = useState(info.id);
   const [currentTitle, setCurrentTitle] = useState(info.title);
   const [currentAccount, setCurrentAccount] = useState(info.account);
@@ -45,9 +46,6 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding}: AccountButto
   const [currentNote, setCurrentNote] = useState(info.note);
   const [logoUri, setLogoUri] = useState("");
   
-  const db = useSQLiteContext();
-  const drizzleDB = drizzle(db, { schema })
-
   useEffect(() => {
     if (info){
       if (info.id === 0){

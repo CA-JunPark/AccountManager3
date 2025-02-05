@@ -8,7 +8,7 @@ import { HStack } from '@/components/ui/hstack';
 import api from '@/components/apis/api';
 import { router } from 'expo-router';
 import { useSQLiteContext } from "expo-sqlite"; // https://www.youtube.com/watch?v=AT5asDD3u_A
-import { drizzle} from 'drizzle-orm/expo-sqlite'; // https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v0311#live-queries-
+import { drizzle, ExpoSQLiteDatabase} from 'drizzle-orm/expo-sqlite'; // https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v0311#live-queries-
 import * as schema from '@/db/schema';
 import { accounts } from '@/db/schema';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -18,11 +18,10 @@ interface SettingModalProps{
     setIsShown: (newState: boolean) => void;
     isSecretMode: boolean;
     setIsSecretMode: (newState: boolean) => void;
+    drizzleDB: ExpoSQLiteDatabase<typeof schema> ;
 } 
 
-const SettingModal = ({isShown, setIsShown, isSecretMode, setIsSecretMode} : SettingModalProps) => {
-  const db = useSQLiteContext();
-  const drizzleDB = drizzle(db, { schema })
+const SettingModal = ({isShown, setIsShown, isSecretMode, setIsSecretMode, drizzleDB} : SettingModalProps) => {
 
   const sync = async() => {
     // load all the accounts in the cloud 

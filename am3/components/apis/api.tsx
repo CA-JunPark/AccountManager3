@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { baseURL, refreshTokenUrl } from '@/assets/fixedData/env';
+import { Alert } from 'react-native';
 
 const api = axios.create({
   baseURL: baseURL, 
@@ -13,16 +14,28 @@ const api = axios.create({
 const setToken = async (key: string, value: string) => {
   try {
     await SecureStore.setItemAsync(key, value);
-  } catch (error) {
-    console.error('Error storing token in SecureStore:', error);
+  } catch (error: any) {
+    Alert.alert(
+      "Could not Store Token", 
+      error, 
+      [
+        {text: "OK"},
+      ]
+    );
   }
 };
 
 const getToken = async (key: string) => {
   try {
     return await SecureStore.getItemAsync(key);
-  } catch (error) {
-    console.error('Error retrieving token from SecureStore:', error);
+  } catch (error: any) {
+    Alert.alert(
+      "JWT Token Error", 
+      error, 
+      [
+        {text: "OK"},
+      ]
+    );
     return null;
   }
 };
@@ -80,10 +93,14 @@ api.interceptors.response.use(
           originalRequest.headers.Authorization = `Bearer ${access}`;
           return api(originalRequest);
         }
-      } catch (refreshError) {
-        console.error('Error refreshing token:', refreshError);
-        
-        // TODO force back to pw page and show notification
+      } catch (refreshError:any) {
+        Alert.alert(
+          "Refresh Token Error", 
+          refreshError, 
+          [
+            {text: "OK"},
+          ]
+        );
       }
     }
 

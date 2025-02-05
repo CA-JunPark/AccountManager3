@@ -168,6 +168,7 @@ export default function Main() {
         setIsShown={setAccountModalVisibility} 
         info={selectedAccountInfo} 
         isAdding={isAdding}
+        drizzleDB={drizzleDB}
       ></AccountModal>
 
       <SettingModal
@@ -175,6 +176,7 @@ export default function Main() {
         setIsShown={setSettingModalVisibility}
         isSecretMode={isSecretMode}
         setIsSecretMode={setIsSecretMode}
+        drizzleDB={drizzleDB}
       >
       </SettingModal>
 
@@ -191,7 +193,6 @@ interface AccountButtonProps {
 }
 
 // memo makes this object will only re-render if its props change
-// TODO : change AvatarFallbackText to AvatarImage
 const AccountButton = memo(({selectedAccountInfo, setSelectedAccountInfo, openModal, setIsAdding, isSecretMode}: AccountButtonProps) => {
   const click = () => {
     setSelectedAccountInfo(selectedAccountInfo);
