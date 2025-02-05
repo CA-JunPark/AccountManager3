@@ -43,7 +43,6 @@ export default function Index() {
   };
 
   const pressEnter = async() => {
-    console.log("Checking password");
     const loginResult = await login(passwordRef.current)
 
     if (loginResult){

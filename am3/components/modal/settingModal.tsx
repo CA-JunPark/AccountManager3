@@ -22,7 +22,6 @@ interface SettingModalProps{
 } 
 
 const SettingModal = ({isShown, setIsShown, isSecretMode, setIsSecretMode, drizzleDB} : SettingModalProps) => {
-
   const sync = async() => {
     // load all the accounts in the cloud 
     try {

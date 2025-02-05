@@ -77,7 +77,7 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: A
     else{
       createLogoUri();
     };
-  }, [info.logo]);
+  }, [currentLogo]);
   
 
   const closeModal = () => {

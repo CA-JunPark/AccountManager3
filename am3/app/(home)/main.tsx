@@ -44,13 +44,20 @@ export default function Main() {
   const drizzleDB = drizzle(db, { schema })
 
   const loadSqlite = async() => {
-    const accountsData = await drizzleDB.query.accounts.findMany();
-    const sortedAccountData = [...accountsData].sort((a, b) => {
-      return a.title.localeCompare(b.title);
-    });
-    setAllAccounts([...sortedAccountData]);
-    setSortedAccounts([...sortedAccountData]);
+    if (searchTextRef.current === ""){
+      const accountsData = await drizzleDB.query.accounts.findMany();
+      const sortedAccountData = [...accountsData].sort((a, b) => {
+        return a.title.localeCompare(b.title);
+      });
+      setAllAccounts([...sortedAccountData]);
+      setSortedAccounts([...sortedAccountData]);
+    };
   };
+  
+  // update accounts when added or saved or deleted + initial load
+  useEffect(()=>{
+    loadSqlite();
+  },[accountModalVisibility, settingModalVisibility])
 
   // sort when isArrowUp change
   useEffect(() => {
@@ -61,11 +68,6 @@ export default function Main() {
     // deleteAccounts();
     sortButton(sortedAccounts);
   }, [isArrowUp])
-
-  // update accounts when added or saved or deleted + initial load
-  useEffect(()=>{
-    loadSqlite();
-  },[accountModalVisibility, settingModalVisibility])
 
   const clickSetting = () => {
     setSettingModalVisibility(true);
