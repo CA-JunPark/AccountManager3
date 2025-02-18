@@ -1,5 +1,5 @@
 // Main screen
-import { Text, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Task} from "react-native";
+import { Text, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform} from "react-native";
 import { Fab, } from '@/components/ui/fab';
 import Entypo from '@expo/vector-icons/Entypo'; // https://icons.expo.fyi/Index
 import { VStack } from '@/components/ui/vstack';
@@ -15,9 +15,6 @@ import SettingModal from "@/components/modal/settingModal";
 import { useSQLiteContext } from "expo-sqlite"; // https://www.youtube.com/watch?v=AT5asDD3u_A
 import { drizzle} from 'drizzle-orm/expo-sqlite'; // https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v0311#live-queries-
 import * as schema from '@/db/schema';
-import { accounts } from '@/db/schema';
-import { eq } from "drizzle-orm";
-import * as FileSystem from 'expo-file-system';
 import { LogoBubble, convertBase64toPngURI } from '@/components/common/Logo';
 
 const emptyAccountInfo: accountInfo = {

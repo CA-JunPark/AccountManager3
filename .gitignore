@@ -200,3 +200,5 @@ db.*
 .vscode
 
 nohup.out
+
+.qodo

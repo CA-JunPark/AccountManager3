@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState, memo } from 'react';
+import React, { useEffect, useCallback, useState, memo, useRef } from 'react';
 import { Text, Modal, StyleSheet, KeyboardAvoidingView, Alert } from 'react-native';
 import { Box } from '@/components/ui/box';
 import { VStack } from '@/components/ui/vstack';
@@ -6,11 +6,11 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { HStack } from '@/components/ui/hstack';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as DocumentPicker from 'expo-document-picker';
-import { Avatar } from '@/components/ui/avatar';
+import { Avatar, AvatarFallbackText } from '@/components/ui/avatar';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Input, InputField } from '@/components/ui/input';
 import { Textarea, TextareaInput } from '@/components/ui/textarea';
-import { drizzle, ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
+import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import * as schema from '@/db/schema';
 import { accounts } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
@@ -43,8 +43,7 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: A
   const [currentLogo, setCurrentLogo] = useState('');
   const [currentNote, setCurrentNote] = useState('');
   const [logoUri, setLogoUri] = useState('');
-
-  console.log(logoUri);
+  const isLogoReadyRef = useRef(false);
 
   // Returns a new ID if there is no valid one
   const getNewMaxID = useCallback(async () => {
@@ -59,12 +58,14 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: A
   // Update logo URI based on current logo and id.
   // If using the default react logo, return that; otherwise, convert base64 to a PNG URI.
   const updateLogoUri = useCallback(async (logo: string, id: number) => {
+    isLogoReadyRef.current = false;
     if (logo === "@/assets/images/react-logo.png") {
       setLogoUri(logo);
     } else {
       const uri = await convertBase64toPngURI(logo, id);
       setLogoUri(uri);
     }
+    isLogoReadyRef.current = true;
   }, []);
 
   // Initialize or update the account data when `info` changes.
@@ -82,12 +83,12 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: A
       }
     };
     initializeData();
-  }, [info, getNewMaxID, updateLogoUri]);
+  }, [info]);
 
   // Also update the logo URI when the logo or id changes.
   useEffect(() => {
     updateLogoUri(currentLogo, currentID);
-  }, [currentLogo, currentID, updateLogoUri]);
+  }, [currentLogo, currentID]);
 
   const closeModal = useCallback(() => {
     setIsShown(false);
@@ -138,12 +139,14 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: A
     ]);
   };
 
-  const resetInfo = useCallback(() => {
+  const resetInfo = useCallback(async () => {
     setCurrentTitle(info.title);
     setCurrentAccount(info.account);
     setCurrentPw(info.pw);
     setCurrentNote(info.note);
     // TODO reset Logo
+    setCurrentLogo(info.logo);
+    await updateLogoUri(info.logo, currentID);
   }, [info]);
 
   const saveAccount = async () => {
@@ -211,7 +214,7 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: A
       { text: "OK", onPress: async () => await addAccount() },
     ]);
   };
-
+  
   return (
     <KeyboardAvoidingView>
       <Modal
@@ -233,9 +236,14 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: A
             </HStack>
 
             <HStack style={styles.logoHStack}>
-              <Avatar size="xl">
-                <LogoBubble title={info.title} logo={logoUri} />
-              </Avatar>
+              {isLogoReadyRef.current ? 
+                (<Avatar size="xl">
+                  <LogoBubble title={info.title} logo={logoUri} />
+                </Avatar>) 
+                : 
+                <Avatar size="xl">
+                  <AvatarFallbackText size="md">{info.title}</AvatarFallbackText>
+                </Avatar>}
               <Box style={{ justifyContent: 'center' }}>
                 <Button size="lg" style={styles.uploadBtn} onPress={pickFile}>
                   <MaterialIcons name="file-upload" size={40} color="white" />
