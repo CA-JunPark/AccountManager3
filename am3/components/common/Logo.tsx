@@ -23,7 +23,7 @@ export const LogoBubble = memo(({ title, logo }: LogoBubbleProps) => {
 });    
 
 export const convertBase64toPngURI = async (base64String: string, id: number) => {
-  const fileUri = `${FileSystem.documentDirectory}temp_image${id}.png`;
+  const fileUri = `${FileSystem.documentDirectory}temp_image${id+Math.random()}.png`;
   await FileSystem.writeAsStringAsync(fileUri, base64String, { encoding: FileSystem.EncodingType.Base64 });
   return fileUri;
 };

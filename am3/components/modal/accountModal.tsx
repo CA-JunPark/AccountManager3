@@ -57,16 +57,17 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: A
 
   // Update logo URI based on current logo and id.
   // If using the default react logo, return that; otherwise, convert base64 to a PNG URI.
-  const updateLogoUri = useCallback(async (logo: string, id: number) => {
+  const updateLogoUri = async (logo: string, id: number) => {
     isLogoReadyRef.current = false;
     if (logo === "@/assets/images/react-logo.png") {
       setLogoUri(logo);
     } else {
       const uri = await convertBase64toPngURI(logo, id);
       setLogoUri(uri);
+      console.log(uri);
     }
     isLogoReadyRef.current = true;
-  }, []);
+  };
 
   // Initialize or update the account data when `info` changes.
   useEffect(() => {
@@ -77,8 +78,8 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: A
         setCurrentTitle(info.title);
         setCurrentAccount(info.account);
         setCurrentPw(info.pw);
-        setCurrentLogo(info.logo);
         setCurrentNote(info.note);
+        setCurrentLogo(info.logo);
         await updateLogoUri(info.logo, newID);
       }
     };
@@ -86,14 +87,15 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: A
   }, [info]);
 
   // Also update the logo URI when the logo or id changes.
-  useEffect(() => {
-    updateLogoUri(currentLogo, currentID);
-  }, [currentLogo, currentID]);
+  // useEffect(() => {
+  //   updateLogoUri(currentLogo, currentID);
+  // }, [currentLogo, currentID]);
 
   const closeModal = useCallback(() => {
     setIsShown(false);
   }, [setIsShown]);
 
+  // uploadLogo
   const pickFile = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -111,7 +113,7 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: A
           encoding: FileSystem.EncodingType.Base64,
         });
         setCurrentLogo(base64);
-        setLogoUri(fileUri);
+        await updateLogoUri(base64, currentID);
       }
     } catch (error) {
       console.error('Error picking file:', error);
