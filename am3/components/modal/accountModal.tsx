@@ -64,7 +64,6 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: A
     } else {
       const uri = await convertBase64toPngURI(logo, id);
       setLogoUri(uri);
-      console.log(uri);
     }
     isLogoReadyRef.current = true;
   };
@@ -146,7 +145,6 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: A
     setCurrentAccount(info.account);
     setCurrentPw(info.pw);
     setCurrentNote(info.note);
-    // TODO reset Logo
     setCurrentLogo(info.logo);
     await updateLogoUri(info.logo, currentID);
   }, [info]);
@@ -233,7 +231,7 @@ export const AccountModal = ({isShown, setIsShown, info, isAdding, drizzleDB}: A
                 {isAdding ? 'Add Account' : 'Account'}
               </Text>
               <Button style={styles.close} onPress={closeModal}>
-                <Ionicons name="arrow-back" size={40} color="white" />
+                <Ionicons name="arrow-back" style={styles.closeIcon} size={40} color="white" />
               </Button>
             </HStack>
 
@@ -397,6 +395,9 @@ const styles = StyleSheet.create({
   },
   close: {
     alignSelf: 'flex-end',
+  },
+  closeIcon: {
+    marginTop: -3,
   },
   logoHStack: {
     justifyContent: 'center',

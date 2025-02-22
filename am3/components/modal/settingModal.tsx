@@ -81,7 +81,8 @@ const SettingModal = ({isShown, setIsShown, isSecretMode, setIsSecretMode, drizz
   };
 
   const clickAbout = () => {
-    console.log("click About");
+    setIsShown(false);
+    router.push("/about");
   };
 
   const clickGitHubLink = async() => {

@@ -28,7 +28,7 @@ const changePW = async(pw: string, newPw: string, confirm: string) =>{
   };
 };
 
-export default function Index() {
+export default function ChangePW() {
   const passwordRef = useRef("");
   const newPasswordRef = useRef("");
   const confirmRef = useRef("");
