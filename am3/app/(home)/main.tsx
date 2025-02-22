@@ -58,11 +58,6 @@ export default function Main() {
 
   // sort when isArrowUp change
   useEffect(() => {
-    // TODO Delete this at the end
-    // const deleteAccounts = async () => {
-    //   await drizzleDB.delete(accounts);
-    // };
-    // deleteAccounts();
     sortButton(sortedAccounts);
   }, [isArrowUp])
 

@@ -26,7 +26,6 @@ const SettingModal = ({isShown, setIsShown, isSecretMode, setIsSecretMode, drizz
     // load all the accounts in the cloud 
     try {
       const jsonResponse = await api.get("/ddb/getAll/")
-      console.log(`Number of accounts fetched: ${jsonResponse.data.length}`);
 
       for (const account of jsonResponse.data) {
         if (account.logo === ""){
