@@ -195,8 +195,9 @@ GitHub.sublime-settings
 .history
 
 env.js
+env.*
 db.*
-
+apiUrls.*
 .vscode
 
 nohup.out

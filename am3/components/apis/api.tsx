@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
-import { baseURL, refreshTokenUrl } from '@/assets/fixedData/env';
+import { baseURL, refreshTokenUrl } from './apiUrls';
 import { Alert } from 'react-native';
 
 const api = axios.create({
