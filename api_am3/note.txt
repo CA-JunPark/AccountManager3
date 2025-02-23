@@ -35,6 +35,8 @@ Nginx setting
 
 Enable OS Firewall
     sudo iptables -I INPUT -p tcp --dport 8000 -j ACCEPT
+    sudo iptables -A INPUT -p tcp --dport 3000 -j ACCEPT
+    sudo iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
     sudo iptables-save | sudo tee /etc/iptables/rules.v4 # Save
 
 nohup
@@ -44,6 +46,56 @@ kill
     ps aux | grep runserver
     kill -9 PID
 
-https
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout selfsigned.key -out selfsigned.crt
-    daphne -e ssl:8000:privateKey=path/to/selfsigned.key:certKey=path/to/selfsigned.crt your_project.asgi:application
+nginx setting
+sudo openssl req -x509 -nodes -days 36500 \
+  -newkey rsa:2048 \
+  -keyout /etc/ssl/private/nginx-selfsigned.key \
+  -out /etc/ssl/certs/nginx-selfsigned.crt
+
+sudo nano /etc/nginx/sites-available/am3_api
+   # HTTP server block: Listen on port 8000 and redirect all requests to HTTPS on port 3000
+    server {
+        listen 8000;
+        server_name _;  # The underscore is a catch-all value
+
+        # Redirect all HTTP requests to HTTPS on port 3000
+        return 301 https://$host:3000$request_uri;
+    }
+
+    # HTTPS server block: Listen on port 3000 with SSL enabled
+    server {
+        listen 3000 ssl;
+        server_name _;
+
+        # SSL certificate and key files (created earlier)
+        ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
+        ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+
+        # Recommended SSL settings
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_prefer_server_ciphers on;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+
+        # Proxy configuration to pass requests to Daphne
+        location / {
+            proxy_pass http://127.0.0.1:8080;  # Daphne will run on port 8080
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+
+sudo ln -s /etc/nginx/sites-available/am3_api /etc/nginx/sites-enabled/
+sudo nginx -t
+
+daphne -b 127.0.0.1 -p 8080 am3_api.asgi:application
+
+sudo systemctl stop nginx
+sudo systemctl disable nginx
+
+sudo systemctl enable nginx
+sudo systemctl start nginx
