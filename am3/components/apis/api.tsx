@@ -1,7 +1,9 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
-import { baseURL, refreshTokenUrl } from './apiUrls';
 import { Alert } from 'react-native';
+
+const baseURL = "https:/am3api.duckdns.org"
+const refreshTokenUrl = "https://am3api.duckdns.org/token/refresh/";
 
 const api = axios.create({
   baseURL: baseURL, 

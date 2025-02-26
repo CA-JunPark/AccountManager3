@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "AccountManager3",
+    "name": "Account Manager 3",
     "slug": "AccountManager3",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -34,16 +34,7 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-sqlite",
-      "expo-secure-store",
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "usesCleartextTraffic": true
-          }
-        }
-      ]
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true

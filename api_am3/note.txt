@@ -99,3 +99,14 @@ sudo systemctl disable nginx
 
 sudo systemctl enable nginx
 sudo systemctl start nginx
+
+
+      "expo-secure-store",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
