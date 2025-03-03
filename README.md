@@ -1,25 +1,23 @@
 # Account Manager 3
 
-## Description
+  ## Description
 
-Account Manager 3 is a comprehensive application designed to manage user accounts in Cloud (AWS DynamoDB). 
+  Account Manager 3 is a comprehensive application designed to manage user accounts in Cloud (AWS DynamoDB). 
 
-**Developer:** Jun Park
+  **Developer:** Jun Park
 
-**Technologies Used:**
-- **Frontend:** React Native Expo
-- **UI:** gluestack-ui (https://gluestack.io/)
-- **Backend:** Django
-- **Local Database:** Sqlite
-- **Cloud Database:** AWS DynamoDB
+  **Technologies Used:**
+  - **Frontend:** React Native Expo
+  - **UI:** gluestack-ui (https://gluestack.io/)
+  - **Backend:** Django
+  - **Local Database:** Sqlite
+  - **Cloud Database:** AWS DynamoDB
 
-## Screenshots
+  ## Screenshots
 
-<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-  <img src="Screenshots/PW.jpg" alt="Password" width="100%" />
-  <img src="Screenshots/Main.jpg" alt="Main" width="100%" />
-  <img src="Screenshots/Search.jpg" alt="Search" width="100%" />
-  <img src="Screenshots/Setting.jpg" alt="Setting" width="100%" />
-  <img src="Screenshots/ChangePW.jpg" alt="Change Password" width="100%" />
-</div>
+  | ![Password](Screenshots/PW.jpg) | ![Main](Screenshots/Main.jpg) |
+  |---------------------------------|-------------------------------|
+  | ![Search](Screenshots/Search.jpg) | ![Setting](Screenshots/Setting.jpg) |
+  | ![Change Password](Screenshots/ChangePW.jpg) | |
 
+  *(Add more screenshots as needed)*
