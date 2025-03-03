@@ -19,5 +19,3 @@
   |---------------------------------|-------------------------------|
   | ![Search](Screenshots/Search.jpg) | ![Setting](Screenshots/Setting.jpg) |
   | ![Change Password](Screenshots/ChangePW.jpg) | |
-
-  *(Add more screenshots as needed)*
